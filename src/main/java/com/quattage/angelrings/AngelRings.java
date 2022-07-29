@@ -1,4 +1,4 @@
-package com.quat.angelrings;
+package com.quattage.angelrings;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;

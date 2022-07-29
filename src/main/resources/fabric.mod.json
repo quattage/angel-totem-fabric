@@ -6,11 +6,11 @@
   "name": "Angel Rings",
   "description": "Survival-Friendly creative flight",
   "authors": [
-    "quat"
+    "quattage"
   ],
   "contact": {
-    "homepage": "https://github.com/truesephah/angel-rings-fabric",
-    "sources": "https://github.com/truesephah/angel-rings-fabric"
+    "homepage": "https://github.com/quattage/angel-rings-fabric",
+    "sources": "https://github.com/quattage/angel-rings-fabric"
   },
 
   "license": "CC0-1.0",
@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.quat.angelrings.AngelRings"
+      "com.quattage.angelrings.AngelRings"
     ]
   },
   "mixins": [
