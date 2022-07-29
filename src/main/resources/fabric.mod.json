@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "angelrings",
+  "id": "angeltotem",
   "version": "${version}",
 
-  "name": "Angel Rings",
+  "name": "Angel Totem",
   "description": "Survival-Friendly creative flight",
   "authors": [
     "quattage"
   ],
   "contact": {
-    "homepage": "https://github.com/quattage/angel-rings-fabric",
-    "sources": "https://github.com/quattage/angel-rings-fabric"
+    "homepage": "https://github.com/quattage/angel-totem-fabric",
+    "sources": "https://github.com/quattage/angel-totem-fabric"
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/angelrings/icon.png",
+  "icon": "assets/angeltotem/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.quattage.angelrings.AngelRings"
+      "com.quattage.angeltotem.AngelTotem"
     ]
   },
   "mixins": [
-    "angelrings.mixins.json"
+    "angeltotem.mixins.json"
   ],
 
   "depends": {
