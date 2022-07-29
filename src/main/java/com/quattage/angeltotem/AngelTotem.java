@@ -18,6 +18,6 @@ public class AngelTotem implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Angel Totem coming to you live from Not Scottland, Minnesota");
-		Registry.register(Registry.ITEM, new Identifier("angeltotem", "angel_totem"), ANGEL_TOTEM);
+		Registry.register(Registry.ITEM, new Identifier("angeltotem", "totem_of_unfalling"), ANGEL_TOTEM);
 	}
 }

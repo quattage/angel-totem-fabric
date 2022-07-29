@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-      "layer0": "angeltotem:item/angel_totem"
+      "layer0": "angeltotem:item/totem_of_unfalling"
     }
   }
