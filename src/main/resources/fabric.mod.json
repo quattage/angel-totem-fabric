@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "angelrings",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Angel Rings",
+  "description": "Survival-Friendly creative flight",
   "authors": [
-    "Me!"
+    "quat"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/truesephah/angel-rings-fabric",
+    "sources": "https://github.com/truesephah/angel-rings-fabric"
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/angelrings/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "com.quat.angelrings.AngelRings"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "angelrings.mixins.json"
   ],
 
   "depends": {
