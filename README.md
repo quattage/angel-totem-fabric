@@ -1,9 +1,5 @@
-# Fabric Example Mod
+# Angel Rings Fabric
+    This is an angel rings mod for minecraft designed to grant the user creative flight in survival mode.
+    It is designed for use in modpacks. The mod doesn't require KubeJS to run, but the ring doesn't (at least for now) have a recipe, so you gotta do that yourself.
 
-## Setup
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
