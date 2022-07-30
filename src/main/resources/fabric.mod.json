@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "angeltotem",
-  "version": "${version}",
+  "version": "0.2",
 
   "name": "Angel Totem",
   "description": "Survival-Friendly creative flight",
