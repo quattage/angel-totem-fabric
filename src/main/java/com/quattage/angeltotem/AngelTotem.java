@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class AngelTotem implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("angeltotem");
 
-	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
+	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
 	
 	@Override
 	public void onInitialize() {
