@@ -15,9 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -54,18 +52,16 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     if(currentOffHand == AngelTotem.ANGEL_TOTEM) {
                         activeInventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
                         this.dropItem(AngelTotem.ANGEL_TOTEM);
-                        currentWorld.playSound(null, playerX, playerY, playerZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
-                        currentWorld.addParticle(ParticleTypes.CRIT, playerX, playerY, playerZ, 0, 2, 0);
+                        currentWorld.playSound(null, playerX, playerY, playerZ, SoundEvents .ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
                     }
                     if(currentMainHand == AngelTotem.ANGEL_TOTEM) {
                         activeInventory.removeStack(activeInventory.selectedSlot);
                         this.dropItem(AngelTotem.ANGEL_TOTEM);
                         currentWorld.playSound(null, playerX, playerY, playerZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
-                        currentWorld.addParticle(ParticleTypes.CRIT, playerX, playerY, playerZ, 0, 2, 0);
                     }
                 }
             } 
-            
+
             if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM)  {
                     this.abilities.allowFlying = true; 
              } 
