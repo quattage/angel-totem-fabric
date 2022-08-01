@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
@@ -42,7 +43,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
 
     @Inject(at = @At("TAIL"), method = "tick")
     private void tick(CallbackInfo info) {
-
         Item currentOffHand = this.getOffHandStack().getItem();
         Item currentMainHand = this.getMainHandStack().getItem();
         PlayerInventory activeInventory = ((PlayerEntity) (Object) this).getInventory();
@@ -52,65 +52,66 @@ public abstract class AngelTotemMixin extends LivingEntity {
         boolean sameDimension = false;
         boolean canUseTotem = false;
         World currentWorld = this.getWorld();
+
+        
+        
         if(!world.isClient()) {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
                 respawnPosition = serverPlayer.getSpawnPointPosition();
                 
                 spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
                 sameDimension = serverPlayer.getSpawnPointDimension() == currentWorld.getRegistryKey();
-
-                if(spawnPointHasBed)
-                    this.sendMessage(Text.of("spawn point bed? " + spawnPointHasBed + ", same dimension?" + sameDimension), false);
-                else
-                    this.sendMessage(Text.of("The previous bed has been removed."), false);
         
+            //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
-
-                //if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem, if they're holding it.
-                if(!canUseTotem && this.abilities.flying) {
-                    this.abilities.allowFlying = false;
-                    dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
-                }
-
-                //if the player is holding a totem, check if they have a respawn position, if they do, check if there is a bed at their respawn position, if they do, check if they are in the same dimension as their bed.
-                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {                         
+                //if the player is holding the totem
+                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {         
+                    //if the player is in the same dimension as their respawn position                
                     if(!sameDimension) {    
-                        this.sendMessage(Text.of("You are not in the same dimension as your home bed."), true);
-                        canUseTotem = false;      
-                        this.abilities.allowFlying = false;        
+                        this.sendMessage(Text.of("You are not in the same dimension as your spawn point."), true);
+                        canUseTotem = false;             
                     } else {
+                        //if the player even has a valid respawn position (shouldn't ever happen but yknow)
                         if(respawnPosition == null) {                                                                                      
-                            this.sendMessage(Text.of("You must have a home bed to use this Totem"), true);                       
-                            canUseTotem = false;   
-                            this.abilities.allowFlying = false;                                                                                 
+                            this.sendMessage(Text.of("You must have a home bed to use this Totem"), true);                 
+                            canUseTotem = false;                                                                                 
                         } else {                                                                                                  
-                            if(!spawnPointHasBed) {                                                                                     
+                            if(!spawnPointHasBed) {                                
+                                //if there is a bed at the player's spawn location                                                     
                                 this.sendMessage(Text.of("Your home bed appears to be missing." ), true);  
-                                canUseTotem = false;                          
-                                this.abilities.allowFlying = false;                                                      
-                            } else {                                                                                                
+                                canUseTotem = false;                                                                           
+                            } else {                        
+                                //if all of these checks pass, enable the totem                                                                        
                                 canUseTotem = true;                                                                                                               
                             }
                         }
                     }
-                    if(canUseTotem)
-                        this.abilities.allowFlying = true;
-                    else   
+                    //if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem.
+                    if(canUseTotem == false && this.abilities.flying) {
+                        dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
                         this.abilities.allowFlying = false;
-                }
-                //check if the player is attacked. if they are, disable the totem. if they aren't re-enable the totem.
-                if(this.getAttacker() != null) {
-                    this.setAttacker(null); 
-                    canUseTotem = false;
+                    }
                 } else {
-                    canUseTotem = true;
+                    //if the player is not using the totem, disable it and remove the flying effect
+                    canUseTotem = false;
+                    this.abilities.allowFlying = false;
+                }
+                
+                //if the previous code has determined that the player can use the totem, then give them the ability to fly
+                if(canUseTotem) 
+                    this.abilities.allowFlying = true;
+                else
+                    this.abilities.allowFlying = false;
+            } else {
+                if(this.abilities.creativeMode || this.isSpectator()) {
+                    this.abilities.allowFlying = true;
                 }
             }
         }
         this.sendAbilitiesUpdate();
     }   
 
-    private void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world) {
+    void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world) {
         if(player.getAbilities().flying) {
             if(mainHandItem == AngelTotem.ANGEL_TOTEM) {
                 inventory.removeStack(inventory.selectedSlot);
@@ -124,6 +125,4 @@ public abstract class AngelTotemMixin extends LivingEntity {
             }
         }
     }
-
-
 }
