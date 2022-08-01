@@ -59,7 +59,10 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
                 respawnPosition = serverPlayer.getSpawnPointPosition();
                 
-                spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
+                if(respawnPosition != null)
+                    spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
+                else
+                    spawnPointHasBed = false;
                 sameDimension = serverPlayer.getSpawnPointDimension() == currentWorld.getRegistryKey();
         
             //there's no point in doing any of this if the player is in creative
