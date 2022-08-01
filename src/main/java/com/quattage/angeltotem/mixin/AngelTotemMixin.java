@@ -50,6 +50,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
         BlockPos respawnPosition = null;
         boolean spawnPointHasBed = false;
         boolean sameDimension = false;
+        boolean canUseTotem = false;
         World currentWorld = this.getWorld();
         if(!world.isClient()) {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
@@ -62,33 +63,47 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     this.sendMessage(Text.of("spawn point bed? " + spawnPointHasBed + ", same dimension?" + sameDimension), false);
                 else
                     this.sendMessage(Text.of("The previous bed has been removed."), false);
-            
-
+        
             if(!this.abilities.creativeMode) {
-                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {
-                    if(respawnPosition != null) {
-                        if(spawnPointHasBed) {
-                            if(sameDimension) {
-                                if(this.getAttacker() != null) {
-                                    this.setAttacker(null);
-                                    dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
-                                } else { 
-                                    this.abilities.allowFlying = true; 
-                                }
-                            } else {
-                                this.sendMessage(Text.of("You are not in the same dimension as your home bed."), true);
-                                dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
-                            }
-                        } else {
-                            this.sendMessage(Text.of("Your home bed seems to be missing."), true);
-                            dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
-                        }
+
+                //if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem, if they're holding it.
+                if(!canUseTotem && this.abilities.flying) {
+                    this.abilities.allowFlying = false;
+                    dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
+                }
+
+                //if the player is holding a totem, check if they have a respawn position, if they do, check if there is a bed at their respawn position, if they do, check if they are in the same dimension as their bed.
+                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {                         
+                    if(!sameDimension) {    
+                        this.sendMessage(Text.of("You are not in the same dimension as your home bed."), true);
+                        canUseTotem = false;      
+                        this.abilities.allowFlying = false;        
                     } else {
-                        this.sendMessage(Text.of("You must set a spawn point to use this totem"), true);
-                        dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
+                        if(respawnPosition == null) {                                                                                      
+                            this.sendMessage(Text.of("You must have a home bed to use this Totem"), true);                       
+                            canUseTotem = false;   
+                            this.abilities.allowFlying = false;                                                                                 
+                        } else {                                                                                                  
+                            if(!spawnPointHasBed) {                                                                                     
+                                this.sendMessage(Text.of("Your home bed appears to be missing." ), true);  
+                                canUseTotem = false;                          
+                                this.abilities.allowFlying = false;                                                      
+                            } else {                                                                                                
+                                canUseTotem = true;                                                                                                               
+                            }
+                        }
                     }
+                    if(canUseTotem)
+                        this.abilities.allowFlying = true;
+                    else   
+                        this.abilities.allowFlying = false;
+                }
+                //check if the player is attacked. if they are, disable the totem. if they aren't re-enable the totem.
+                if(this.getAttacker() != null) {
+                    this.setAttacker(null); 
+                    canUseTotem = false;
                 } else {
-                    this.abilities.allowFlying = false; 
+                    canUseTotem = true;
                 }
             }
         }
