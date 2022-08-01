@@ -25,6 +25,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -84,7 +85,10 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                 this.sendMessage(Text.of("Your home bed appears to be missing." ), true);  
                                 canUseTotem = false;                                                                           
                             } else {                        
-                                //if all of these checks pass, enable the totem                                                                        
+                                int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
+                                this.sendMessage(Text.of("distance:" + blockPosDistance), true);
+                                //if all of these checks pass, enable the totem         
+                                                                                               
                                 canUseTotem = true;                                                                                                               
                             }
                         }
@@ -119,12 +123,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
             if(mainHandItem == AngelTotem.ANGEL_TOTEM) {
                 inventory.removeStack(inventory.selectedSlot);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 0.6f, 1.2f);
             }
             if(offHandItem == AngelTotem.ANGEL_TOTEM) {
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 0.6f, 1.2f);
             }
         }
     }
