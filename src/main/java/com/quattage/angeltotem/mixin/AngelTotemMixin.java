@@ -173,10 +173,11 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            TrinketComponent trinket = (TrinketsApi.getTrinketComponent((LivingEntity) player)).get();
+            /*TrinketComponent trinket = (TrinketsApi.getTrinketComponent((LivingEntity) player)).get();
             if(trinket.isEquipped(AngelTotem.ANGEL_TOTEM)) {
-                //inventory.removeStack(EquipmentSlot.LEGS.getEntitySlotId());
+                inventory.removeStack(EquipmentSlot.LEGS.getEntitySlotId());
             }
+            */
         }
     }
 }
