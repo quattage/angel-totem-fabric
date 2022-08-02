@@ -25,6 +25,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -72,17 +73,17 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {         
                     //if the player is in the same dimension as their respawn position                
                     if(!sameDimension) {    
-                        this.sendMessage(Text.of("You are not in the same dimension as your spawn point."), true);
+                        this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch"), true);
                         canUseTotem = false;             
                     } else {
-                        //if the player even has a valid respawn position (shouldn't ever happen but yknow)
+                        //if the player even has a valid respawn position (this will rarely happen but yknow)
                         if(respawnPosition == null) {                                                                                      
-                            this.sendMessage(Text.of("You must have a home bed to use this Totem"), true);                 
+                            this.sendMessage(new TranslatableText("angeltotem.errorBedNotFound"), true);                 
                             canUseTotem = false;                                                                                 
                         } else {                                                                                                  
                             if(!spawnPointHasBed) {                                
                                 //if there is a bed at the player's spawn location                                                     
-                                this.sendMessage(Text.of("Your home bed appears to be missing." ), true);  
+                                this.sendMessage(new TranslatableText("angeltotem.errorBedMissing"), true);  
                                 canUseTotem = false;                                                                           
                             } else {            
                                 //assign an int to keep track of distance between player and bed            
@@ -115,7 +116,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                     if(canUseTotem) {
                                         canUseTotem = false;
                                     } else {
-                                        this.sendMessage(Text.of("Your home bed is out of range."), true);
+                                        this.sendMessage(new TranslatableText("angeltotem.errorBedOutOfRange"), true);
                                     }
                                 }                                                                                                        
                             }

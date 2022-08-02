@@ -1,4 +1,8 @@
 {
-	"item.angeltotem.totem_of_unfalling": "Totem of Unfalling"
+	"item.angeltotem.totem_of_unfalling": "Totem of Unfalling",
+	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your spawn point!",
+	"angeltotem.errorBedNotFound": "You must have a home bed to use this totem.",
+	"angeltotem.errorBedMissing": "Your home bed appears to be missing.",
+	"angeltotem.errorBedOutOfRange": "Your home bed is out of range!"
 }
 
