@@ -55,6 +55,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
         boolean canUseTotem = false;
         World currentWorld = this.getWorld();
         int maximumAllowedDistance = AngelTotem.getConfig().AngelTotemOptions.bedFlightRadius;
+        boolean doBedCheck = AngelTotem.getConfig().AngelTotemOptions.doBedCheck;
         boolean useReliefMode = AngelTotem.getConfig().AngelTotemOptions.reliefMode;
 
         if(!world.isClient()) {
@@ -70,55 +71,58 @@ public abstract class AngelTotemMixin extends LivingEntity {
             //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
                 //if the player is holding the totem
-                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {         
-                    //if the player is in the same dimension as their respawn position                
-                    if(!sameDimension) {    
-                        this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch"), true);
-                        canUseTotem = false;             
-                    } else {
-                        //if the player even has a valid respawn position (this will rarely happen but yknow)
-                        if(respawnPosition == null) {                                                                                      
-                            this.sendMessage(new TranslatableText("angeltotem.errorBedNotFound"), true);                 
-                            canUseTotem = false;                                                                                 
-                        } else {                                                                                                  
-                            if(!spawnPointHasBed) {                                
-                                //if there is a bed at the player's spawn location                                                     
-                                this.sendMessage(new TranslatableText("angeltotem.errorBedMissing"), true);  
-                                canUseTotem = false;                                                                           
-                            } else {            
-                                //assign an int to keep track of distance between player and bed            
-                                int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
-                                //assign a float to calculate percent of configured distance the player currently is
-                                float distPercent = (AngelTotem.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
-                                //the width of the 
-                                int barWidth = AngelTotem.getConfig().AngelTotemOptions.indicatorWidth;
-                                String bar = "§a";
-                                if(distPercent > 0.5f)
-                                    bar = "§6";
-                                if(distPercent > 0.8f)
-                                    bar = "§4";
-                                if(blockPosDistance < maximumAllowedDistance + 4) {
-                                    if(barWidth > 0) {
-                                        if(barWidth < 15)
-                                            barWidth = 15;
-                                        for(int pipe = 0; pipe < barWidth; pipe++) {
-                                            bar += "|";
-                                        }
+                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {   
+                    //checks if the user has doBedCheck set to true in the config
+                    if(doBedCheck) {
+                        //if the player is in the same dimension as their respawn position                
+                        if(!sameDimension) {    
+                            this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch"), true);
+                            canUseTotem = false;             
+                        } else {
+                            //if the player even has a valid respawn position (this will rarely happen but yknow)
+                            if(respawnPosition == null) {                                                                                      
+                                this.sendMessage(new TranslatableText("angeltotem.errorBedNotFound"), true);                 
+                                canUseTotem = false;                                                                                 
+                            } else {                                                                                                  
+                                if(!spawnPointHasBed) {                                
+                                    //if there is a bed at the player's spawn location                                                     
+                                    this.sendMessage(new TranslatableText("angeltotem.errorBedMissing"), true);  
+                                    canUseTotem = false;                                                                           
+                                } else {            
+                                    //assign an int to keep track of distance between player and bed            
+                                    int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
+                                    //assign a float to calculate percent of configured distance the player currently is
+                                    float distPercent = (AngelTotem.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
+                                    //the width of the 
+                                    int barWidth = AngelTotem.getConfig().AngelTotemOptions.indicatorWidth;
+                                    String bar = "§a";
+                                    if(distPercent > 0.5f)
+                                        bar = "§6";
+                                    if(distPercent > 0.8f)
+                                        bar = "§4";
+                                    if(blockPosDistance < maximumAllowedDistance + 4) {
+                                        if(barWidth > 0) {
+                                            if(barWidth < 15)
+                                                barWidth = 15;
+                                            for(int pipe = 0; pipe < barWidth; pipe++) {
+                                                bar += "|";
+                                            }
 
-                                        if(distPercent > 0.1 && distPercent < 0.99) {
-                                            int barProgress = (int) (bar.length() * distPercent);
-                                            bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
+                                            if(distPercent > 0.1 && distPercent < 0.99) {
+                                                int barProgress = (int) (bar.length() * distPercent);
+                                                bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
+                                            }
+                                            this.sendMessage(Text.of(bar), true);
                                         }
-                                        this.sendMessage(Text.of(bar), true);
-                                    }
-                                    canUseTotem = true;       
-                                } else {
-                                    if(canUseTotem) {
-                                        canUseTotem = false;
+                                        canUseTotem = true;       
                                     } else {
-                                        this.sendMessage(new TranslatableText("angeltotem.errorBedOutOfRange"), true);
-                                    }
-                                }                                                                                                        
+                                        if(canUseTotem) {
+                                            canUseTotem = false;
+                                        } else {
+                                            this.sendMessage(new TranslatableText("angeltotem.errorBedOutOfRange"), true);
+                                        }
+                                    }                                                                                                        
+                                }
                             }
                         }
                     }
