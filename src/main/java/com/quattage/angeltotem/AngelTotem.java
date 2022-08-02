@@ -30,7 +30,7 @@ public class AngelTotem implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Angel Totem coming to you live from Not Scottland, Minnesota");
 		Registry.register(Registry.ITEM, new Identifier("angeltotem", "totem_of_unfalling"), ANGEL_TOTEM);
-		if(FabricLoader.getInstance().isModLoaded("trinkets")) {
+		if(isTrinketsLoaded()) {
 			LOGGER.info("Trinkets detected!");
 			if(getConfig().BasicTotemOptions.useTrinkets) {
 				TrinketsCompat.initializeTrinketTotem();
@@ -39,6 +39,10 @@ public class AngelTotem implements ModInitializer {
 				LOGGER.info("Totem of Unfalling's trinket regsitry has been disabled!");
 			}
 		}
+	}
+
+	public boolean isTrinketsLoaded() {
+		return FabricLoader.getInstance().isModLoaded("trinkets");
 	}
 
 	public static float clampValue(float value, float min, float max) {

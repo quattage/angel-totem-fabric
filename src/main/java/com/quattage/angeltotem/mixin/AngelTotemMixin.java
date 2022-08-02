@@ -65,9 +65,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
         boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
-        boolean trinketEquip = TrinketTotem.isTrinketEquipped;
-        
-
+        boolean trinketEquip;
+        if(AngelTotem.isTrinketsLoaded()) 
+            trinketEquip = TrinketTotem.isTrinketEquipped;
+        else 
+            trinketEquip = false;
+            
         if(!world.isClient()) {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
                 respawnPosition = serverPlayer.getSpawnPointPosition();
