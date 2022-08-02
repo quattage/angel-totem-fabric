@@ -3,6 +3,17 @@
 	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your spawn point!",
 	"angeltotem.errorBedNotFound": "You must have a home bed to use this totem.",
 	"angeltotem.errorBedMissing": "Your home bed appears to be missing.",
-	"angeltotem.errorBedOutOfRange": "Your home bed is out of range!"
+	"angeltotem.errorBedOutOfRange": "Your home bed is out of range!",
+
+	"text.autoconfig.angeltotem.option.BasicTotemOptions": "Basic Options",
+	"text.autoconfig.angeltotem.option.AdvancedTotemOptions": "Advanced Options",
+
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.bedFlightRadius": "Bed Flight Radius (Set to 0 to diable)",
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.doBedCheck": "Flight Requires Bed?",
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.reliefMode": "Use Relief Mode?",
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.useTrinkets": "Use Trinkets?",
+
+	"text.autoconfig.angeltotem.option.AdvancedTotemOptions.totemCraftable": "Add Totem Recipe?",
+	"text.autoconfig.angeltotem.option.AdvancedTotemOptions.indicatorWidth": "Totem Flight Indicator Width (Set to 0 to disable)"
 }
 

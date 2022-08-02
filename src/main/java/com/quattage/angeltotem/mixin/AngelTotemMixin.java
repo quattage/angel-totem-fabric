@@ -1,5 +1,7 @@
 package com.quattage.angeltotem.mixin;
 
+import java.util.Optional;
+
 import org.lwjgl.system.CallbackI.P;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,12 +11,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.quattage.angeltotem.AngelTotem;
+import com.quattage.angeltotem.compat.TrinketTotem;
 
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.Trinket;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,9 +62,11 @@ public abstract class AngelTotemMixin extends LivingEntity {
         boolean sameDimension = false;
         boolean canUseTotem = false;
         World currentWorld = this.getWorld();
-        int maximumAllowedDistance = AngelTotem.getConfig().AngelTotemOptions.bedFlightRadius;
-        boolean doBedCheck = AngelTotem.getConfig().AngelTotemOptions.doBedCheck;
-        boolean useReliefMode = AngelTotem.getConfig().AngelTotemOptions.reliefMode;
+        int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
+        boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
+        boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
+        boolean trinketEquip = TrinketTotem.isTrinketEquipped;
+        
 
         if(!world.isClient()) {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
@@ -71,7 +81,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
             //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
                 //if the player is holding the totem
-                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM) {   
+                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM || trinketEquip) {   
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
@@ -94,7 +104,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                     //assign a float to calculate percent of configured distance the player currently is
                                     float distPercent = (AngelTotem.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
                                     //the width of the 
-                                    int barWidth = AngelTotem.getConfig().AngelTotemOptions.indicatorWidth;
+                                    int barWidth = AngelTotem.getConfig().AdvancedTotemOptions.indicatorWidth;
                                     String bar = "§a";
                                     if(distPercent > 0.5f)
                                         bar = "§6";
@@ -162,6 +172,10 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+            }
+            TrinketComponent trinket = (TrinketsApi.getTrinketComponent((LivingEntity) player)).get();
+            if(trinket.isEquipped(AngelTotem.ANGEL_TOTEM)) {
+                //inventory.removeStack(EquipmentSlot.LEGS.getEntitySlotId());
             }
         }
     }
