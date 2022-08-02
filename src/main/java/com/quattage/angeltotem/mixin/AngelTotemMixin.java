@@ -53,9 +53,9 @@ public abstract class AngelTotemMixin extends LivingEntity {
         boolean sameDimension = false;
         boolean canUseTotem = false;
         World currentWorld = this.getWorld();
+        int maximumAllowedDistance = AngelTotem.getConfig().AngelTotemOptions.bedFlightRadius;
+        boolean useReliefMode = AngelTotem.getConfig().AngelTotemOptions.reliefMode;
 
-        
-        
         if(!world.isClient()) {
                 serverPlayer = (ServerPlayerEntity) (Object) this;
                 respawnPosition = serverPlayer.getSpawnPointPosition();
@@ -84,12 +84,40 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                 //if there is a bed at the player's spawn location                                                     
                                 this.sendMessage(Text.of("Your home bed appears to be missing." ), true);  
                                 canUseTotem = false;                                                                           
-                            } else {                        
+                            } else {            
+                                //assign an int to keep track of distance between player and bed            
                                 int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
-                                this.sendMessage(Text.of("distance:" + blockPosDistance), true);
-                                //if all of these checks pass, enable the totem         
-                                                                                               
-                                canUseTotem = true;                                                                                                               
+                                //assign a float to calculate percent of configured distance the player currently is
+                                float distPercent = (AngelTotem.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
+                                //the width of the 
+                                int barWidth = AngelTotem.getConfig().AngelTotemOptions.indicatorWidth;
+                                String bar = "§a";
+                                if(distPercent > 0.5f)
+                                    bar = "§6";
+                                if(distPercent > 0.8f)
+                                    bar = "§4";
+                                if(blockPosDistance < maximumAllowedDistance + 4) {
+                                    if(barWidth > 0) {
+                                        if(barWidth < 15)
+                                            barWidth = 15;
+                                        for(int pipe = 0; pipe < barWidth; pipe++) {
+                                            bar += "|";
+                                        }
+
+                                        if(distPercent > 0.1 && distPercent < 0.99) {
+                                            int barProgress = (int) (bar.length() * distPercent);
+                                            bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
+                                        }
+                                        this.sendMessage(Text.of(bar), true);
+                                    }
+                                    canUseTotem = true;       
+                                } else {
+                                    if(canUseTotem) {
+                                        canUseTotem = false;
+                                    } else {
+                                        this.sendMessage(Text.of("Your home bed is out of range."), true);
+                                    }
+                                }                                                                                                        
                             }
                         }
                     }
@@ -123,12 +151,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
             if(mainHandItem == AngelTotem.ANGEL_TOTEM) {
                 inventory.removeStack(inventory.selectedSlot);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 0.6f, 1.2f);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
             if(offHandItem == AngelTotem.ANGEL_TOTEM) {
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 0.6f, 1.2f);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
         }
     }
