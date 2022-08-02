@@ -16,6 +16,7 @@ import com.quattage.angeltotem.compat.TrinketTotem;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.Trinket;
 import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.block.BedBlock;
@@ -23,11 +24,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -46,6 +49,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
     @Shadow public abstract void sendAbilitiesUpdate();
     @Shadow @Final private PlayerAbilities abilities;
     @Shadow public abstract void sendMessage(Text message, boolean actionBar);
+    private boolean trinketEquip;
 
     public AngelTotemMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -65,7 +69,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
         boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
-        boolean trinketEquip;
         if(AngelTotem.isTrinketsLoaded()) 
             trinketEquip = TrinketTotem.isTrinketEquipped;
         else 
@@ -176,11 +179,16 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            /*TrinketComponent trinket = (TrinketsApi.getTrinketComponent((LivingEntity) player)).get();
-            if(trinket.isEquipped(AngelTotem.ANGEL_TOTEM)) {
-                inventory.removeStack(EquipmentSlot.LEGS.getEntitySlotId());
+            if(trinketEquip) {
+                TrinketsApi.getTrinketComponent((LivingEntity) player).ifPresent(trinkets -> trinkets.forEach((reference, stack) -> {
+                    if(TrinketsApi.getTrinket(stack.getItem()) == TrinketsApi.getTrinket(AngelTotem.ANGEL_TOTEM)) {
+                        TrinketInventory trinketInventory = reference.inventory();
+                        trinketInventory.setStack(reference.index(), ItemStack.EMPTY);
+                        player.dropItem(AngelTotem.ANGEL_TOTEM);
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+                    }
+                }));
             }
-            */
         }
     }
 }

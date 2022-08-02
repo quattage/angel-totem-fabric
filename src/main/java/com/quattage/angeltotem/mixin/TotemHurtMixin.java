@@ -9,8 +9,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.quattage.angeltotem.AngelTotem;
+import com.quattage.angeltotem.compat.TrinketTotem;
 import com.quattage.angeltotem.mixin.AngelTotemMixin;
 
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.block.BedBlock;
@@ -23,6 +26,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -43,6 +47,12 @@ public abstract class TotemHurtMixin extends LivingEntity {
     @Inject(at = @At("TAIL"), method = "applyDamage")
     protected void applyDamage(CallbackInfo info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
+        Boolean trinketEquip;
+        if(AngelTotem.isTrinketsLoaded()) 
+            trinketEquip = TrinketTotem.isTrinketEquipped;
+        else 
+            trinketEquip = false;
+
         if(player.getAbilities().flying) {
             PlayerInventory inventory = ((PlayerEntity) (Object) this).getInventory();
             if(this.getOffHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
@@ -54,6 +64,16 @@ public abstract class TotemHurtMixin extends LivingEntity {
                 inventory.removeStack(inventory.selectedSlot);
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
+            }
+            if(trinketEquip) {
+                TrinketsApi.getTrinketComponent((LivingEntity) player).ifPresent(trinkets -> trinkets.forEach((reference, stack) -> {
+                    if(TrinketsApi.getTrinket(stack.getItem()) == TrinketsApi.getTrinket(AngelTotem.ANGEL_TOTEM)) {
+                        TrinketInventory trinketInventory = reference.inventory();
+                        trinketInventory.setStack(reference.index(), ItemStack.EMPTY);
+                        player.dropItem(AngelTotem.ANGEL_TOTEM);
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+                    }
+                }));
             }
         }
     }

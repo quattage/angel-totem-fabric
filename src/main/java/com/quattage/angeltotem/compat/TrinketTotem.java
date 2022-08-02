@@ -17,6 +17,5 @@ public class TrinketTotem implements Trinket {
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         isTrinketEquipped = false;
     }
-
     
 }

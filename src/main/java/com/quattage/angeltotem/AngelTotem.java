@@ -41,7 +41,7 @@ public class AngelTotem implements ModInitializer {
 		}
 	}
 
-	public boolean isTrinketsLoaded() {
+	public static boolean isTrinketsLoaded() {
 		return FabricLoader.getInstance().isModLoaded("trinkets");
 	}
 
