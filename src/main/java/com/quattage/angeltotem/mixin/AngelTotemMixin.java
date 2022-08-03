@@ -1,8 +1,5 @@
 package com.quattage.angeltotem.mixin;
 
-import java.util.Optional;
-
-import org.lwjgl.system.CallbackI.P;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,36 +10,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.quattage.angeltotem.AngelTotem;
 import com.quattage.angeltotem.compat.TrinketTotem;
 
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.Trinket;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketInventory;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 @Mixin(PlayerEntity.class)
 public abstract class AngelTotemMixin extends LivingEntity {
 
@@ -68,8 +53,8 @@ public abstract class AngelTotemMixin extends LivingEntity {
         World currentWorld = this.getWorld();
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
-        boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
-        if(AngelTotem.isTrinketsLoaded()) 
+        //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
+        if(AngelTotem.getShouldUseTrinkets()) 
             trinketEquip = TrinketTotem.isTrinketEquipped;
         else 
             trinketEquip = false;
@@ -179,16 +164,8 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 player.dropItem(AngelTotem.ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            if(trinketEquip) {
-                TrinketsApi.getTrinketComponent((LivingEntity) player).ifPresent(trinkets -> trinkets.forEach((reference, stack) -> {
-                    if(TrinketsApi.getTrinket(stack.getItem()) == TrinketsApi.getTrinket(AngelTotem.ANGEL_TOTEM)) {
-                        TrinketInventory trinketInventory = reference.inventory();
-                        trinketInventory.setStack(reference.index(), ItemStack.EMPTY);
-                        player.dropItem(AngelTotem.ANGEL_TOTEM);
-                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
-                    }
-                }));
-            }
+            if(trinketEquip) 
+                TrinketTotem.dropTrinketTotem(player, world);
         }
     }
 }
