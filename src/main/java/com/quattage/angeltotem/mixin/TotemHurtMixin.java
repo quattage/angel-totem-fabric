@@ -53,6 +53,3 @@ public abstract class TotemHurtMixin extends LivingEntity {
 }
 
 
-//private void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world)
-
-

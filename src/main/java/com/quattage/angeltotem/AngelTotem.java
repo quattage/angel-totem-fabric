@@ -13,33 +13,50 @@ import org.slf4j.LoggerFactory;
 
 import com.quattage.angeltotem.compat.TrinketsCompat;
 import com.quattage.angeltotem.config.AngelTotemConfig;
+import com.quattage.angeltotem.recipe.striking.StrikingRecipe;
+import com.quattage.angeltotem.recipe.striking.StrikingRecipeSerializer;
+import com.quattage.angeltotem.recipe.striking.StrikingRecipe.StrikingRecipeType;
 
 import me.shedaniel.autoconfig.ConfigHolder;
 
 public class AngelTotem implements ModInitializer {
 	
+	public static final String MODID = "angeltotem";
 	public static final ConfigHolder<AngelTotemConfig> CONFIG_HOLDER = AngelTotemConfig.initializeConfigs();
     public static AngelTotemConfig getConfig() {
         return CONFIG_HOLDER.getConfig();
     }
 
-	public static final Logger LOGGER = LoggerFactory.getLogger("angeltotem");
+	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
 	
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Angel Totem coming to you live from Not Scottland, Minnesota");
-		Registry.register(Registry.ITEM, new Identifier("angeltotem", "totem_of_unfalling"), ANGEL_TOTEM);
+		messageLog("my butt hurts");
+		registerItems();
+		registerRecipes();
 
 		if(getShouldUseTrinkets()) {
-			LOGGER.info("Trinkets detected!");
+			messageLog("Trinkets Detected!");
 			if(getConfig().BasicTotemOptions.useTrinkets) {
 				TrinketsCompat.initializeTrinketTotem();
 				LOGGER.info("Totem registered as a trinket!");
+				messageLog("Totem registered as a trinket!");
 			} else {
-				LOGGER.info("Totem of Unfalling's trinket regsitry has been disabled!");
+				messageLog("Totem of Unfalling's trinket regsitry has been disabled!");
 			}
 		}
+	}
+
+	private void registerItems() {
+		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_of_unfalling"), ANGEL_TOTEM);
+	}
+
+	private void registerRecipes() {
+		Registry.register(Registry.RECIPE_SERIALIZER, StrikingRecipeSerializer.ID, StrikingRecipeSerializer.INSTANCE);
+		Identifier typeIdentifier =  new Identifier(MODID, StrikingRecipe.StrikingRecipeType.INSTANCE.toString());
+		messageLog("registering new recipe type: " + typeIdentifier);
+		Registry.register(Registry.RECIPE_TYPE, typeIdentifier, StrikingRecipeType.INSTANCE);
 	}
 
 	public static boolean getShouldUseTrinkets() {
@@ -48,5 +65,9 @@ public class AngelTotem implements ModInitializer {
 
 	public static float clampValue(float value, float min, float max) {
 		return Math.max(min, Math.min(max, value));
+	}
+
+	public static void messageLog(String message) {
+		LOGGER.info(message);
 	}
 }

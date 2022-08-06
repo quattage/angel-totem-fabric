@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.quattage.angeltotem.AngelTotem;
 import com.quattage.angeltotem.compat.TrinketTotem;
+import com.quattage.angeltotem.helpers.MathHelper;
 
 import net.minecraft.entity.player.PlayerInventory;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -54,6 +54,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
         //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
+        
         if(AngelTotem.getShouldUseTrinkets()) 
             trinketEquip = TrinketTotem.isTrinketEquipped;
         else 
@@ -93,7 +94,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                     //assign an int to keep track of distance between player and bed            
                                     int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
                                     //assign a float to calculate percent of configured distance the player currently is
-                                    float distPercent = (AngelTotem.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
+                                    float distPercent = (MathHelper.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
                                     //the width of the 
                                     int barWidth = AngelTotem.getConfig().AdvancedTotemOptions.indicatorWidth;
                                     String bar = "§a";

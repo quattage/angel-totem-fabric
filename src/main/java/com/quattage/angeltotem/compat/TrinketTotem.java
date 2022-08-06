@@ -36,7 +36,5 @@ public class TrinketTotem implements Trinket {
             }
         }));
     }
-    
-    
 }
 

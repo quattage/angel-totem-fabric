@@ -6,7 +6,8 @@
 	"mixins": [],
 	"client": [
 		"AngelTotemMixin",
-		"TotemHurtMixin"
+		"TotemHurtMixin",
+		"LightningStrikeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
