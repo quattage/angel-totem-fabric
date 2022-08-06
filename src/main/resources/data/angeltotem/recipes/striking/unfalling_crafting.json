@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+      " F ",
+      "FDF",
+      " F "
+  ],
+  "key": {
+      "D": {
+          "item": "minecraft:diamond"
+      },
+      "F": {
+          "item": "angeltotem:totem_fragment"
+      }
+  },
+  "result": {
+      "item": "angeltotem:totem_of_unfalling",
+      "count": 1
+  },
+  "group": "totem"
+}
+

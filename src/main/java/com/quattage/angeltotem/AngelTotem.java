@@ -5,14 +5,19 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
+
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.quattage.angeltotem.compat.TrinketsCompat;
 import com.quattage.angeltotem.config.AngelTotemConfig;
+import com.quattage.angeltotem.recipe.InWorldFakeInventory;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipeSerializer;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe.StrikingRecipeType;
@@ -29,6 +34,7 @@ public class AngelTotem implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
+	public static final Item TOTEM_FRAGMENT = new Item(new FabricItemSettings().group(ItemGroup.MISC).maxCount(1).fireproof());
 	
 	@Override
 	public void onInitialize() {
@@ -50,6 +56,7 @@ public class AngelTotem implements ModInitializer {
 
 	private void registerItems() {
 		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_of_unfalling"), ANGEL_TOTEM);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_fragment"), TOTEM_FRAGMENT);
 	}
 
 	private void registerRecipes() {
@@ -62,12 +69,25 @@ public class AngelTotem implements ModInitializer {
 	public static boolean getShouldUseTrinkets() {
 		return FabricLoader.getInstance().isModLoaded("trinkets") && getConfig().BasicTotemOptions.useTrinkets;
 	}
-
-	public static float clampValue(float value, float min, float max) {
-		return Math.max(min, Math.min(max, value));
-	}
-
+	
 	public static void messageLog(String message) {
 		LOGGER.info(message);
 	}
+
+	public static ItemStack parseStrikingRecipe(ItemStack inputItem, World world) {
+        // make a recipeManager object of type InWorldFakeInventory
+        InWorldFakeInventory recipeManager = new InWorldFakeInventory(ItemStack.EMPTY);
+        // set the fake inventory's "stack" to the provided input item
+        recipeManager.setStack(0, inputItem);
+        // create a new optional StrikingRecipe from the recipe manager, and then get
+        // the first occurance of the recipe's use as defined by datapacks
+        Optional<StrikingRecipe> recipe = world.getRecipeManager()
+                .getFirstMatch(StrikingRecipe.StrikingRecipeType.INSTANCE, recipeManager, world);
+        // if the optional striking recipe was found, return it
+        if (recipe.isPresent()) {
+            return recipe.get().craft(recipeManager);
+        }
+        // return null if the recipe was not found
+        return null;
+    }
 }

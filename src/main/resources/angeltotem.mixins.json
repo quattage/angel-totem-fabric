@@ -7,7 +7,8 @@
 	"client": [
 		"AngelTotemMixin",
 		"TotemHurtMixin",
-		"LightningStrikeMixin"
+		"LightningStrikeMixin",
+		"ItemEntityPreserveMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

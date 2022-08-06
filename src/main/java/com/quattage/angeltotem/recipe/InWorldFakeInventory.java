@@ -12,7 +12,6 @@ public class InWorldFakeInventory implements Inventory {
 
     public InWorldFakeInventory(ItemStack inputStack) {
         this.inputStack = inputStack;
-        AngelTotem.messageLog("FAKEINVENTORY INITIALIZES AS " + this.inputStack.getCount());
     }
 
     @Override
@@ -32,7 +31,6 @@ public class InWorldFakeInventory implements Inventory {
 
     @Override
     public ItemStack getStack(int var1) {
-        AngelTotem.messageLog("GETSTACK() IN FAKEINVENTORY RETURNS " + this.inputStack.getCount());
         return this.inputStack;
     }
 

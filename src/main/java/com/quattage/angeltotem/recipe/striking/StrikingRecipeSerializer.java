@@ -48,7 +48,6 @@ public class StrikingRecipeSerializer implements RecipeSerializer<StrikingRecipe
 		Item outputItem = Registry.ITEM.getOrEmpty(new Identifier(recipeAsJson.outputItem)).orElseThrow(() -> new JsonSyntaxException("Item " + recipeAsJson.outputItem + " does not exist."));
 		//turn the registered output item into a proper ItemStack by instantiating a new one with an outputAmount 
 		ItemStack outputItemStack = new ItemStack(outputItem, recipeAsJson.outputAmount);
-		AngelTotem.messageLog("SERIALIZER SEES " + outputItemStack.getCount());
 		//return the newly read recipe as a StrikingRecipe object
 		return new StrikingRecipe(inputIngredient, outputItemStack, recipeId);
 		//💀 verbose moment 💀

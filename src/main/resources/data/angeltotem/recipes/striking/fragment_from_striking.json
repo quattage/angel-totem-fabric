@@ -1,0 +1,8 @@
+{
+  "type": "angeltotem:striking",
+  "inputItem": {
+    "item": "minecraft:totem_of_undying"
+  },
+  "outputItem": "angeltotem:totem_fragment",
+  "outputAmount": "2"
+}

@@ -32,7 +32,6 @@ public class StrikingRecipe implements Recipe<InWorldFakeInventory> {
         this.inputIngredient = inputIngredient;
         this.outputStack = outputStack;
         this.id = id;
-        AngelTotem.messageLog("RECIPE CONSTRUCTOR INITIALIZES AS " + outputStack.getCount());
     }
     
     public Ingredient getInput() {
@@ -76,7 +75,6 @@ public class StrikingRecipe implements Recipe<InWorldFakeInventory> {
     @Override
     public ItemStack craft(InWorldFakeInventory fakeInventory) {
         ItemStack result = this.getOutput().copy();
-        AngelTotem.messageLog("RECIPE CRAFT() METHOD SEES " + result.getCount());
         return result;
     }
 }
