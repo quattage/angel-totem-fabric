@@ -1,6 +1,5 @@
 package com.quattage.angeltotem.recipe.striking;
 
-import com.quattage.angeltotem.AngelTotem;
 import com.quattage.angeltotem.recipe.InWorldFakeInventory;
 
 import net.minecraft.item.ItemStack;

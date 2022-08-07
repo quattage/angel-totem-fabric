@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -34,7 +35,8 @@ public class AngelTotem implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
-	public static final Item TOTEM_FRAGMENT = new Item(new FabricItemSettings().group(ItemGroup.MISC).maxCount(1).fireproof());
+	public static final Item BOUND_ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof().rarity(Rarity.RARE));
+	public static final Item TOTEM_FRAGMENT = new Item(new FabricItemSettings().group(ItemGroup.MISC).maxCount(16).fireproof());
 	
 	@Override
 	public void onInitialize() {
@@ -56,6 +58,7 @@ public class AngelTotem implements ModInitializer {
 
 	private void registerItems() {
 		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_of_unfalling"), ANGEL_TOTEM);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "bound_totem_of_unfalling"), TOTEM_FRAGMENT);
 		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_fragment"), TOTEM_FRAGMENT);
 	}
 

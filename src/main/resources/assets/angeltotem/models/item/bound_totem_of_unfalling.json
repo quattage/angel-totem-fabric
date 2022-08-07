@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+      "layer0": "angeltotem:item/totem_of_unfalling"
+    }
+  }
