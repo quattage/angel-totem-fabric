@@ -58,7 +58,7 @@ public class AngelTotem implements ModInitializer {
 
 	private void registerItems() {
 		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_of_unfalling"), ANGEL_TOTEM);
-		Registry.register(Registry.ITEM, new Identifier(MODID, "bound_totem_of_unfalling"), TOTEM_FRAGMENT);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "bound_totem_of_unfalling"), BOUND_ANGEL_TOTEM);
 		Registry.register(Registry.ITEM, new Identifier(MODID, "totem_fragment"), TOTEM_FRAGMENT);
 	}
 

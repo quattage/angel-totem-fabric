@@ -8,7 +8,8 @@
 		"AngelTotemMixin",
 		"TotemHurtMixin",
 		"LightningStrikeMixin",
-		"ItemEntityPreserveMixin"
+		"ItemEntityPreserveMixin",
+		"TotemRightClickMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

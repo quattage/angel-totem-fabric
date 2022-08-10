@@ -73,7 +73,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
             //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
                 //if the player is holding the totem
-                if(currentOffHand == AngelTotem.ANGEL_TOTEM || currentMainHand == AngelTotem.ANGEL_TOTEM || trinketEquip) {   
+                if(currentOffHand == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
@@ -155,14 +155,14 @@ public abstract class AngelTotemMixin extends LivingEntity {
 
     void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world) {
         if(player.getAbilities().flying) {
-            if(mainHandItem == AngelTotem.ANGEL_TOTEM) {
+            if(mainHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
                 inventory.removeStack(inventory.selectedSlot);
-                player.dropItem(AngelTotem.ANGEL_TOTEM);
+                player.dropItem(AngelTotem.BOUND_ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            if(offHandItem == AngelTotem.ANGEL_TOTEM) {
+            if(offHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
-                player.dropItem(AngelTotem.ANGEL_TOTEM);
+                player.dropItem(AngelTotem.BOUND_ANGEL_TOTEM);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
             if(trinketEquip) 
