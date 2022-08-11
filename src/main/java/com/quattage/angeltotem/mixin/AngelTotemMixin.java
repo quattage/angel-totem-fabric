@@ -18,6 +18,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -42,8 +44,8 @@ public abstract class AngelTotemMixin extends LivingEntity {
 
     @Inject(at = @At("TAIL"), method = "tick")
     private void tick(CallbackInfo info) {
-        Item currentOffHand = this.getOffHandStack().getItem();
-        Item currentMainHand = this.getMainHandStack().getItem();
+        ItemStack currentOffHand = this.getOffHandStack();
+        ItemStack currentMainHand = this.getMainHandStack();
         PlayerInventory activeInventory = ((PlayerEntity) (Object) this).getInventory();
         ServerPlayerEntity serverPlayer = null;
         BlockPos respawnPosition = null;
@@ -53,6 +55,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
         World currentWorld = this.getWorld();
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
+        NbtCompound totemNbt = null;
         //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
         
         if(AngelTotem.getShouldUseTrinkets()) 
@@ -60,20 +63,33 @@ public abstract class AngelTotemMixin extends LivingEntity {
         else 
             trinketEquip = false;
             
-        if(!world.isClient()) {
-                serverPlayer = (ServerPlayerEntity) (Object) this;
-                respawnPosition = serverPlayer.getSpawnPointPosition();
-                
-                if(respawnPosition != null)
-                    spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
-                else
-                    spawnPointHasBed = false;
-                sameDimension = serverPlayer.getSpawnPointDimension() == currentWorld.getRegistryKey();
         
+        if(!world.isClient()) {
             //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
                 //if the player is holding the totem
-                if(currentOffHand == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
+                
+                if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
+                    serverPlayer = (ServerPlayerEntity) (Object) this;
+                    if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
+                        totemNbt = currentOffHand.getNbt();
+                    }
+                    if(currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
+                        totemNbt = currentMainHand.getNbt();
+                    }
+                    if(trinketEquip) {
+                        totemNbt = TrinketTotem.getTrinketNbt((PlayerEntity) (Object) this, world);
+                    }
+                    if(totemNbt != null) {
+                        if(totemNbt.contains("PositionX") && totemNbt.contains("PositionY") && totemNbt.contains("PositionZ")) {
+                            respawnPosition = new BlockPos(totemNbt.getDouble("PositionX"), totemNbt.getDouble("PositionY"), totemNbt.getDouble("PositionZ"));
+                        }
+                    }
+                    
+                    if(respawnPosition!= null) {
+                        spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
+                    }
+                    sameDimension = serverPlayer.getSpawnPointDimension() == currentWorld.getRegistryKey();
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
@@ -83,7 +99,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                         } else {
                             //if the player even has a valid respawn position (this will rarely happen but yknow)
                             if(respawnPosition == null) {                                                                                      
-                                this.sendMessage(new TranslatableText("angeltotem.errorBedNotFound"), true);                 
+                                this.sendMessage(new TranslatableText("angeltotem.errorTotemUnbound"), true);                 
                                 canUseTotem = false;                                                                                 
                             } else {                                                                                                  
                                 if(!spawnPointHasBed) {                                
@@ -128,13 +144,13 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             }
                         }
                     }
-                    //if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem.
+                    // if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem.
                     if(canUseTotem == false && this.abilities.flying) {
-                        dropTotem(currentMainHand, currentOffHand, activeInventory, (PlayerEntity) (Object) this, world);
+                        dropTotem(currentMainHand.getItem(), currentOffHand.getItem(), activeInventory, (PlayerEntity) (Object) this, world);
                         this.abilities.allowFlying = false;
                     }
                 } else {
-                    //if the player is not using the totem, disable it and remove the flying effect
+                    // if the player is not using the totem, disable it and remove the flying effect
                     canUseTotem = false;
                     this.abilities.allowFlying = false;
                 }
@@ -156,13 +172,17 @@ public abstract class AngelTotemMixin extends LivingEntity {
     void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world) {
         if(player.getAbilities().flying) {
             if(mainHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
+                ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
+                totemToDrop.setNbt(inventory.getStack(inventory.selectedSlot).getNbt());
                 inventory.removeStack(inventory.selectedSlot);
-                player.dropItem(AngelTotem.BOUND_ANGEL_TOTEM);
+                player.dropItem(totemToDrop, true);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
             if(offHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
+                ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
+                totemToDrop.setNbt(inventory.getStack(PlayerInventory.OFF_HAND_SLOT).getNbt());
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
-                player.dropItem(AngelTotem.BOUND_ANGEL_TOTEM);
+                player.dropItem(totemToDrop, true);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
             if(trinketEquip) 

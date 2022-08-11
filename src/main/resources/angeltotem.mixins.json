@@ -9,7 +9,7 @@
 		"TotemHurtMixin",
 		"LightningStrikeMixin",
 		"ItemEntityPreserveMixin",
-		"TotemRightClickMixin"
+		"BedRightClickMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

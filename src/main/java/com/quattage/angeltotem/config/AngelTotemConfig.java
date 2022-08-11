@@ -19,7 +19,7 @@ public class AngelTotemConfig implements ConfigData {
     public BasicTotemOptions BasicTotemOptions = new BasicTotemOptions();
     public static class BasicTotemOptions {
         @Comment("Radius around the player's bed that they are allowed to use the ring in, measured in blocks. Set to 0 to disable.")
-        public int bedFlightRadius = 100;
+        public int bedFlightRadius = 50;
 
         @Comment("Toggle the requirement for an active respawn bed to use the totem.")
         public boolean doBedCheck = true;

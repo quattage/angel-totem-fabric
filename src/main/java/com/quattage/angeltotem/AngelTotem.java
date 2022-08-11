@@ -22,6 +22,8 @@ import com.quattage.angeltotem.recipe.InWorldFakeInventory;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipeSerializer;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe.StrikingRecipeType;
+import com.quattage.item.AngelTotemItem;
+import com.quattage.item.BoundAngelTotemItem;
 
 import me.shedaniel.autoconfig.ConfigHolder;
 
@@ -34,8 +36,8 @@ public class AngelTotem implements ModInitializer {
     }
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-	public static final Item ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
-	public static final Item BOUND_ANGEL_TOTEM = new Item(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof().rarity(Rarity.RARE));
+	public static final AngelTotemItem ANGEL_TOTEM = new AngelTotemItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
+	public static final BoundAngelTotemItem BOUND_ANGEL_TOTEM = new BoundAngelTotemItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof().rarity(Rarity.RARE));
 	public static final Item TOTEM_FRAGMENT = new Item(new FabricItemSettings().group(ItemGroup.MISC).maxCount(16).fireproof());
 	
 	@Override

@@ -9,6 +9,7 @@ import com.quattage.angeltotem.AngelTotem;
 import com.quattage.angeltotem.compat.TrinketTotem;
 
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,15 +37,19 @@ public abstract class TotemHurtMixin extends LivingEntity {
 
         if(player.getAbilities().flying) {
             PlayerInventory inventory = ((PlayerEntity) (Object) this).getInventory();
-            if(this.getOffHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
-                inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
-                player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
-            }
-            if(this.getMainHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
+            if(this.getMainHandStack().getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
+                ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
+                totemToDrop.setNbt(inventory.getStack(inventory.selectedSlot).getNbt());
                 inventory.removeStack(inventory.selectedSlot);
-                player.dropItem(AngelTotem.ANGEL_TOTEM);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 0.6f, 1.2f);
+                player.dropItem(totemToDrop, true);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+            }
+            if(this.getOffHandStack().getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
+                ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
+                totemToDrop.setNbt(inventory.getStack(PlayerInventory.OFF_HAND_SLOT).getNbt());
+                inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
+                player.dropItem(totemToDrop, true);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
             if(trinketEquip) 
                 TrinketTotem.dropTrinketTotem(player, world);
