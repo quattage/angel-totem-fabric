@@ -52,12 +52,12 @@ public abstract class LightningStrikeMixin extends Entity {
                     newItem.setInvulnerable(true);
                     // add velocity to the result ItemStack with some random velocity vectors
                     newItem.setVelocity((new Random().nextDouble() - 0.5) * 0.3d, 0.4d, (new Random().nextDouble() - 0.5) * 0.3d);
-                    // sets particular this newItem instance to never despawn for convenience, and also to prevent it from stacking with other items during the random fling
-                    newItem.setNeverDespawn();
                     // add the itemEntity to the world
                     world.spawnEntity(newItem);
                 }
+                // play cool crafting sound
                 world.playSound(null, strikePosition.x, strikePosition.y, strikePosition.z, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.HOSTILE, 4f, 0.8f);
+                // remove the original ingredient entity from the world
                 this.remove(RemovalReason.DISCARDED);
             } else {
                 // if the conditions are not met, defer to the vanilla non-overriden method

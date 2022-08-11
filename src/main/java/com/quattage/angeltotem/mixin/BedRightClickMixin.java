@@ -23,10 +23,9 @@ import net.minecraft.world.World;
 @Mixin(ServerPlayerInteractionManager.class)
 public abstract class BedRightClickMixin{
 
-    
-    // actionresult check for right clicking on a bed pulled from the interactBLock() method in ServerPlayerInteractionManager
-    // this mixin just makes it so that if the player is holding an unbound totem, right clicking on a bed fails
-    // by doing this, it ensures that the player can properly bind a totem without sleeping in the bed they're trying to bind it to
+    // this mixin is responsible for overriding the action result when the player interacts with a bed
+    // it just checks if the player is is holidng a totem while right clicking a bed and cancels the event
+    // to prevent the player from accidentally sleeping while trying to bind a totem
     @Inject(method = "interactBlock",
             at = @At(
                     value = "INVOKE_ASSIGN",
@@ -40,8 +39,10 @@ public abstract class BedRightClickMixin{
         // store the state of the block in question
         BlockState state = world.getBlockState(hitResult.getBlockPos());
         // if the player interacted with a bed and is holding a totem
-        if(state.getBlock() == Blocks.RED_BED && player.getMainHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
+        if(state.isIn(AngelTotem.getValidBindBlocks()) && player.getMainHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
+            // "force" call useOnBlock for the ANGEL_TOTEM item
             player.getMainHandStack().getItem().useOnBlock(new ItemUsageContext(player, hand, hitResult));
+            // declare the action result passed to ignore the sleeping action
             cinfo.setReturnValue(ActionResult.PASS);
         }
     }

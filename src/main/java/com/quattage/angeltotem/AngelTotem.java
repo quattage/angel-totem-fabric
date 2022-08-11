@@ -3,12 +3,15 @@ package com.quattage.angeltotem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.World;
 
 import java.util.Optional;
@@ -41,6 +44,8 @@ public class AngelTotem implements ModInitializer {
     public static AngelTotemConfig getConfig() {
         return CONFIG_HOLDER.getConfig();
     }
+
+	
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 	public static final AngelTotemItem ANGEL_TOTEM = new AngelTotemItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());

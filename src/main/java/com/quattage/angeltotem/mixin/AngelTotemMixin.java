@@ -89,7 +89,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     if(respawnPosition!= null) {
                         spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
                     }
-                    sameDimension = serverPlayer.getSpawnPointDimension() == currentWorld.getRegistryKey();
+                    sameDimension = currentWorld.getRegistryKey().toString() == totemNbt.getString("Dimension");
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
