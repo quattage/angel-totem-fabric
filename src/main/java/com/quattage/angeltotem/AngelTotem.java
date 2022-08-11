@@ -18,10 +18,17 @@ import org.slf4j.LoggerFactory;
 
 import com.quattage.angeltotem.compat.TrinketsCompat;
 import com.quattage.angeltotem.config.AngelTotemConfig;
+
 import com.quattage.angeltotem.recipe.InWorldFakeInventory;
+
+import com.quattage.angeltotem.recipe.beaming.BeamingRecipe;
+import com.quattage.angeltotem.recipe.beaming.BeamingRecipeSerializer;
+import com.quattage.angeltotem.recipe.beaming.BeamingRecipe.BeamingRecipeType;
+
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipeSerializer;
 import com.quattage.angeltotem.recipe.striking.StrikingRecipe.StrikingRecipeType;
+
 import com.quattage.item.AngelTotemItem;
 import com.quattage.item.BoundAngelTotemItem;
 
@@ -66,9 +73,12 @@ public class AngelTotem implements ModInitializer {
 
 	private void registerRecipes() {
 		Registry.register(Registry.RECIPE_SERIALIZER, StrikingRecipeSerializer.ID, StrikingRecipeSerializer.INSTANCE);
-		Identifier typeIdentifier =  new Identifier(MODID, StrikingRecipe.StrikingRecipeType.INSTANCE.toString());
-		messageLog("registering new recipe type: " + typeIdentifier);
-		Registry.register(Registry.RECIPE_TYPE, typeIdentifier, StrikingRecipeType.INSTANCE);
+		Identifier strikingTypeIdentifier =  new Identifier(MODID, StrikingRecipe.StrikingRecipeType.INSTANCE.toString());
+		Registry.register(Registry.RECIPE_TYPE, strikingTypeIdentifier, StrikingRecipeType.INSTANCE);
+
+		Registry.register(Registry.RECIPE_SERIALIZER, BeamingRecipeSerializer.ID, BeamingRecipeSerializer.INSTANCE);
+		Identifier beamingTypeIdentifier =  new Identifier(MODID, BeamingRecipe.BeamingRecipeType.INSTANCE.toString());
+		Registry.register(Registry.RECIPE_TYPE, beamingTypeIdentifier, BeamingRecipeType.INSTANCE);
 	}
 
 	public static boolean getShouldUseTrinkets() {

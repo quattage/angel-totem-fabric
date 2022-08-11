@@ -36,8 +36,6 @@ public abstract class LightningStrikeMixin extends Entity {
             // if the itemEntity isn't null, then parse the ingredient to get its result
             if ((ItemEntity) (Object) this != null)
                 result = AngelTotem.parseStrikingRecipe(((ItemEntity) (Entity) this).getStack(), world);
-            AngelTotem.messageLog(
-                    "STRIKINGRECIPE IS PASSED " + ((ItemEntity) (Entity) this).getStack() + " FROM LIGHTNING MIXIN");
             // check if the parsed recupe result actually exists for the given input object
             if (result != null) {
                 int resultCount = result.getCount();
