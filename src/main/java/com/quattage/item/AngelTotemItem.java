@@ -1,12 +1,8 @@
 package com.quattage.item;
 
-import java.util.List;
-
 import com.quattage.angeltotem.AngelTotem;
 
-import blue.endless.jankson.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -16,7 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -48,11 +43,9 @@ public class AngelTotemItem extends Item {
                     nbt.putDouble("PositionX", hitPosition.getX());
                     nbt.putDouble("PositionY", hitPosition.getY());
                     nbt.putDouble("PositionZ", hitPosition.getZ());
-                    /////// FIIIIIIIIIIIIIX
-                    String dimension = serverPlayer.getWorld().getRegistryKey().;
-                    context.getPlayer().sendMessage(Text.of("butt fart: " + dimension), false);
+                    String dimension = serverPlayer.getWorld().getRegistryKey().getValue().getPath();
                     nbt.putString("Dimension", dimension);
-                    nbt.putString("BindingTarget", hitState.getBlock().getName().toString());
+                    nbt.putString("BindingTarget", hitState.getBlock().getTranslationKey());
                     result.setNbt(nbt);
                     world.playSound(null, hitPosition.getX(), hitPosition.getY(), hitPosition.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 0.9f, 0.8f);
                     inventory.removeStack(inventory.selectedSlot);

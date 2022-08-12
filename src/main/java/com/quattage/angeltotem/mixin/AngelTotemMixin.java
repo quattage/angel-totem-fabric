@@ -86,12 +86,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     if(respawnPosition!= null) {
                         spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());
                     }
-                    sameDimension = currentWorld.getDimension().toString().equals(totemNbt.getString("Dimension"));
+                    sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
                         if(!sameDimension) {    
-                            this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch"), true);
+                            this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
                             canUseTotem = false;             
                         } else {
                             //if the player even has a valid respawn position (this will rarely happen but yknow)
@@ -101,7 +101,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             } else {                                                                                                  
                                 if(!spawnPointHasBed) {                                
                                     //if there is a bed at the player's spawn location                                                     
-                                    this.sendMessage(new TranslatableText("angeltotem.errorBedMissing"), true);  
+                                    this.sendMessage(new TranslatableText("angeltotem.errorTargetMissing", new TranslatableText(totemNbt.getString("BindingTarget"))), true);  
                                     canUseTotem = false;                                                                           
                                 } else {            
                                     if(currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.BEACON) {
@@ -150,7 +150,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                         if(canUseTotem) {
                                             canUseTotem = false;
                                         } else {
-                                            this.sendMessage(new TranslatableText("angeltotem.errorBedOutOfRange"), true);
+                                            this.sendMessage(new TranslatableText("angeltotem.errorTargetOutOfRange", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
                                         }
                                     }                                                                                                        
                                 }

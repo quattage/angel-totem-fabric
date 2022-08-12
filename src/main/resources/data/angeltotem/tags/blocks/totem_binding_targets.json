@@ -17,6 +17,8 @@
         "minecraft:green_bed",
         "minecraft:red_bed",
         "minecraft:black_bed",
-        "minecraft:respawn_anchor"
+        "minecraft:blue_bed",
+        "minecraft:respawn_anchor",
+        "minecraft:beacon"
     ]
 }

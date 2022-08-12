@@ -2,10 +2,18 @@
 	"item.angeltotem.totem_of_unfalling": "Unbound Totem of Unfalling",
 	"item.angeltotem.bound_totem_of_unfalling": "Totem of Unfalling",
 	"item.angeltotem.totem_fragment": "Totem Fragment",
-	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your spawn point!",
-	"angeltotem.errorTotemUnbound": "You must bind this totem to a valid spawn point!",
-	"angeltotem.errorBedMissing": "Your home bed appears to be missing.",
-	"angeltotem.errorBedOutOfRange": "Your home bed is out of range!",
+	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your %s!",
+	"angeltotem.errorTotemUnbound": "You must bind this totem to use it!",
+	"angeltotem.errorTargetMissing": "Your %s appears to be missing.",
+	"angeltotem.errorTargetOutOfRange": "Your %s is out of range!",
+
+	"angeltotem.tooltip.boundTo": "§7Bound to a %d§7 in %s§7",
+	"angeltotem.tooltip.boundAt": "§7At x %d, y %s, z",
+	"angeltotem.tooltip.invalid": "§7This totem is §4invalid§7.",
+
+	"angeltotem.dimensionKey.overworld": "The Overworld",
+	"angeltotem.dimensionKey.the_nether": "The Nether",
+	"angeltotem.dimensionKey.the_end": "The End",
 
 	"text.autoconfig.angeltotem.option.BasicTotemOptions": "Basic Options",
 	"text.autoconfig.angeltotem.option.AdvancedTotemOptions": "Advanced Options",
@@ -15,6 +23,8 @@
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.hardMode": "Hard Mode",
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.useFallingRelief": "Use Falling Relief",
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.useTrinkets": "Use Trinkets",
+
+
 
 	"text.autoconfig.angeltotem.option.AdvancedTotemOptions.indicatorWidth": "Totem Flight Indicator Width (Set to 0 to disable)"
 }
