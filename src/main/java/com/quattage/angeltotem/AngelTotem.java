@@ -4,14 +4,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.World;
 
 import java.util.Optional;
@@ -41,6 +40,8 @@ public class AngelTotem implements ModInitializer {
 	
 	public static final String MODID = "angeltotem";
 	public static final ConfigHolder<AngelTotemConfig> CONFIG_HOLDER = AngelTotemConfig.initializeConfigs();
+
+
     public static AngelTotemConfig getConfig() {
         return CONFIG_HOLDER.getConfig();
     }
@@ -48,16 +49,19 @@ public class AngelTotem implements ModInitializer {
 	
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+
+	public static final TagKey<Block> TOTEM_TARGETS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MODID, "totem_binding_targets"));
+	public static final TagKey<Block> TOTEM_TARGETS_HARD = TagKey.of(Registry.BLOCK_KEY, new Identifier(MODID, "totem_binding_targets_hard"));
+
 	public static final AngelTotemItem ANGEL_TOTEM = new AngelTotemItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof());
 	public static final BoundAngelTotemItem BOUND_ANGEL_TOTEM = new BoundAngelTotemItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1).fireproof().rarity(Rarity.RARE));
 	public static final Item TOTEM_FRAGMENT = new Item(new FabricItemSettings().group(ItemGroup.MISC).maxCount(16).fireproof());
-	
+
 	@Override
 	public void onInitialize() {
 		messageLog("my butt hurts");
 		registerItems();
 		registerRecipes();
-
 		if(getShouldUseTrinkets()) {
 			messageLog("Trinkets Detected!");
 			if(getConfig().BasicTotemOptions.useTrinkets) {
@@ -84,6 +88,12 @@ public class AngelTotem implements ModInitializer {
 		Registry.register(Registry.RECIPE_SERIALIZER, BeamingRecipeSerializer.ID, BeamingRecipeSerializer.INSTANCE);
 		Identifier beamingTypeIdentifier =  new Identifier(MODID, BeamingRecipe.BeamingRecipeType.INSTANCE.toString());
 		Registry.register(Registry.RECIPE_TYPE, beamingTypeIdentifier, BeamingRecipeType.INSTANCE);
+	}
+
+	public static TagKey<Block> getValidTotemTargets() {
+		if(getConfig().BasicTotemOptions.hardMode) 
+			return TOTEM_TARGETS_HARD;
+		return TOTEM_TARGETS; 
 	}
 
 	public static boolean getShouldUseTrinkets() {

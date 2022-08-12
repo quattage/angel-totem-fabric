@@ -20,7 +20,6 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -47,7 +46,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
         ItemStack currentOffHand = this.getOffHandStack();
         ItemStack currentMainHand = this.getMainHandStack();
         PlayerInventory activeInventory = ((PlayerEntity) (Object) this).getInventory();
-        ServerPlayerEntity serverPlayer = null;
         BlockPos respawnPosition = null;
         boolean spawnPointHasBed = false;
         boolean sameDimension = false;
@@ -70,7 +68,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 //if the player is holding the totem
                 
                 if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
-                    serverPlayer = (ServerPlayerEntity) (Object) this;
                     if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
                         totemNbt = currentOffHand.getNbt();
                     }
@@ -87,9 +84,9 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     }
                     
                     if(respawnPosition!= null) {
-                        spawnPointHasBed = currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.RED_BED;
+                        spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());
                     }
-                    sameDimension = currentWorld.getRegistryKey().toString() == totemNbt.getString("Dimension");
+                    sameDimension = currentWorld.getDimension().toString().equals(totemNbt.getString("Dimension"));
                     //checks if the user has doBedCheck set to true in the config
                     if(doBedCheck) {
                         //if the player is in the same dimension as their respawn position                
@@ -107,6 +104,22 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                     this.sendMessage(new TranslatableText("angeltotem.errorBedMissing"), true);  
                                     canUseTotem = false;                                                                           
                                 } else {            
+                                    if(currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.BEACON) {
+                                        NbtCompound beaconNbt = new NbtCompound();
+                                        currentWorld.getBlockEntity(respawnPosition).readNbt(beaconNbt);
+                                        if(beaconNbt.getInt("Levels") == 1) {
+                                            maximumAllowedDistance *= 0.8;
+                                        }
+                                        if(beaconNbt.getInt("Levels") == 2) {
+                                            maximumAllowedDistance *= 1.3;
+                                        }
+                                        if(beaconNbt.getInt("Levels") == 3) {
+                                            maximumAllowedDistance *= 2;
+                                        }
+                                        if(beaconNbt.getInt("Levels") == 4) {
+                                            maximumAllowedDistance *= 2.5;
+                                        }
+                                    }
                                     //assign an int to keep track of distance between player and bed            
                                     int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
                                     //assign a float to calculate percent of configured distance the player currently is
@@ -161,8 +174,11 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 else
                     this.abilities.allowFlying = false;
             } else {
-                if(this.abilities.creativeMode || this.isSpectator()) {
+                if(this.abilities.creativeMode) {
                     this.abilities.allowFlying = true;
+                }
+                if(((PlayerEntity) (Object) this).isSpectator()) {
+                    this.noClip = true;
                 }
             }
         }

@@ -38,7 +38,6 @@ public abstract class ItemEntityPreserveMixin extends Entity {
                         if(!world.isClient()) { 
                             // set the ItemEntity to never despawn
                             activeItem.setNeverDespawn();
-                            AngelTotem.messageLog(activeItem + " HAS BEEN SET TO NEVER DESPAWN");
                             // play cool sound haha
                             if(!world.isThundering()) {
                                 world.playSound(null, activeItem.getX(), activeItem.getY(), activeItem.getZ(), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 2f, 0.8f);

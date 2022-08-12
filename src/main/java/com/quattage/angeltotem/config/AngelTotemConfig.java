@@ -24,8 +24,11 @@ public class AngelTotemConfig implements ConfigData {
         @Comment("Toggle the requirement for an active respawn bed to use the totem.")
         public boolean doBedCheck = true;
         
-        @Comment("Enable 'relief mode', which prevents the user from dying if they lose their totem mid-air.")
-        public boolean reliefMode = false;
+        @Comment("Enable Hard Mode, which replaces beds as a binding target with a beacon")
+        public boolean hardMode = false;
+
+        @Comment("Enable falling relief, which prevents the user from dying if they lose their totem mid-air.")
+        public boolean useFallingRelief = false;
 
         @Comment("Toggle trinket registration for the totem. Useful if you have trinkets installed, but don't want to use the totem as a trinket.")
         public boolean useTrinkets = true;

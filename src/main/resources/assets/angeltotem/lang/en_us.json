@@ -12,7 +12,8 @@
 
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.bedFlightRadius": "Bed Flight Radius (Set to 0 to diable)",
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.doBedCheck": "Do Bed Check",
-	"text.autoconfig.angeltotem.option.BasicTotemOptions.reliefMode": "Relief Mode",
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.hardMode": "Hard Mode",
+	"text.autoconfig.angeltotem.option.BasicTotemOptions.useFallingRelief": "Use Falling Relief",
 	"text.autoconfig.angeltotem.option.BasicTotemOptions.useTrinkets": "Use Trinkets",
 
 	"text.autoconfig.angeltotem.option.AdvancedTotemOptions.indicatorWidth": "Totem Flight Indicator Width (Set to 0 to disable)"
