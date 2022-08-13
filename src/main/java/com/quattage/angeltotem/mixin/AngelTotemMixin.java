@@ -12,7 +12,12 @@ import com.quattage.angeltotem.compat.TrinketTotem;
 import com.quattage.angeltotem.helpers.MathHelper;
 
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.block.BeaconBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +25,7 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -54,6 +60,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
         int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.bedFlightRadius;
         boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.doBedCheck;
         NbtCompound totemNbt = null;
+        ServerPlayerEntity serverPlayer;
         //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
         
         if(AngelTotem.getShouldUseTrinkets()) 
@@ -86,10 +93,9 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     if(respawnPosition!= null) {
                         spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());
                     }
+
                     sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
-                    //checks if the user has doBedCheck set to true in the config
-                    if(doBedCheck) {
-                        //if the player is in the same dimension as their respawn position                
+                    if(doBedCheck) {             
                         if(!sameDimension) {    
                             this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
                             canUseTotem = false;             
@@ -99,60 +105,66 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                 this.sendMessage(new TranslatableText("angeltotem.errorTotemUnbound"), true);                 
                                 canUseTotem = false;                                                                                 
                             } else {                                                                                                  
-                                if(!spawnPointHasBed) {                                
-                                    //if there is a bed at the player's spawn location                                                     
+                                if(!spawnPointHasBed) {                                                                               
                                     this.sendMessage(new TranslatableText("angeltotem.errorTargetMissing", new TranslatableText(totemNbt.getString("BindingTarget"))), true);  
                                     canUseTotem = false;                                                                           
                                 } else {            
-                                    if(currentWorld.getBlockState(respawnPosition).getBlock() == Blocks.BEACON) {
-                                        NbtCompound beaconNbt = new NbtCompound();
-                                        currentWorld.getBlockEntity(respawnPosition).readNbt(beaconNbt);
-                                        if(beaconNbt.getInt("Levels") == 1) {
-                                            maximumAllowedDistance *= 0.8;
-                                        }
-                                        if(beaconNbt.getInt("Levels") == 2) {
-                                            maximumAllowedDistance *= 1.3;
-                                        }
-                                        if(beaconNbt.getInt("Levels") == 3) {
-                                            maximumAllowedDistance *= 2;
-                                        }
-                                        if(beaconNbt.getInt("Levels") == 4) {
-                                            maximumAllowedDistance *= 2.5;
-                                        }
-                                    }
-                                    //assign an int to keep track of distance between player and bed            
-                                    int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
-                                    //assign a float to calculate percent of configured distance the player currently is
-                                    float distPercent = (MathHelper.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
-                                    //the width of the 
-                                    int barWidth = AngelTotem.getConfig().AdvancedTotemOptions.indicatorWidth;
-                                    String bar = "§a";
-                                    if(distPercent > 0.5f)
-                                        bar = "§6";
-                                    if(distPercent > 0.8f)
-                                        bar = "§4";
-                                    if(blockPosDistance < maximumAllowedDistance + 4) {
-                                        if(barWidth > 0) {
-                                            if(barWidth < 15)
-                                                barWidth = 15;
-                                            for(int pipe = 0; pipe < barWidth; pipe++) {
-                                                bar += "|";
-                                            }
-
-                                            if(distPercent > 0.1 && distPercent < 0.99) {
-                                                int barProgress = (int) (bar.length() * distPercent);
-                                                bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
-                                            }
-                                            this.sendMessage(Text.of(bar), true);
-                                        }
-                                        canUseTotem = true;       
+                                    serverPlayer = (ServerPlayerEntity) (Object) this;
+                                    if((totemNbt.getString("BindingTarget").toUpperCase().contains("ANCHOR") || totemNbt.getString("BindingTarget").toUpperCase().contains("BED")) && !respawnPosition.equals(serverPlayer.getSpawnPointPosition())) {
+                                        this.sendMessage(new TranslatableText("angeltotem.errorBedNotSpawnpoint", new TranslatableText(totemNbt.getString("BindingTarget"))), true);   
                                     } else {
-                                        if(canUseTotem) {
-                                            canUseTotem = false;
+                                        BlockState respawnBlock = world.getBlockState(respawnPosition);
+                                        if(respawnBlock.getBlock() == Blocks.RESPAWN_ANCHOR && respawnBlock.get(RespawnAnchorBlock.CHARGES) == 0) {
+                                            this.sendMessage(new TranslatableText("angeltotem.errorAnchorOutOfCharges"), true);   
                                         } else {
-                                            this.sendMessage(new TranslatableText("angeltotem.errorTargetOutOfRange", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
+                                            if(respawnBlock.getBlock() == Blocks.BEACON) {
+                                                int beaconLevels = currentWorld.getBlockEntity(respawnPosition).toInitialChunkDataNbt().getInt("Levels");
+                                                AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
+                                                if(beaconLevels == 4) {
+                                                    maximumAllowedDistance *= 3;
+                                                } else if(beaconLevels == 3) {
+                                                    maximumAllowedDistance *= 2;
+                                                } else if(beaconLevels == 2) {
+                                                    maximumAllowedDistance *= 1.5;
+                                                } else {
+                                                    maximumAllowedDistance *= 1;
+                                                }
+                                            }
+                                            //assign an int to keep track of distance between player and bed            
+                                            int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
+                                            //assign a float to calculate percent of configured distance the player currently is
+                                            float distPercent = (MathHelper.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
+                                            //the width of the 
+                                            int barWidth = AngelTotem.getConfig().AdvancedTotemOptions.indicatorWidth;
+                                            String bar = "§a";
+                                            if(distPercent > 0.5f)
+                                                bar = "§6";
+                                            if(distPercent > 0.8f)
+                                                bar = "§4";
+                                            if(blockPosDistance < maximumAllowedDistance + 4) {
+                                                if(barWidth > 0) {
+                                                    if(barWidth < 15)
+                                                        barWidth = 15;
+                                                    for(int pipe = 0; pipe < barWidth; pipe++) {
+                                                        bar += "|";
+                                                    }
+
+                                                    if(distPercent > 0.1 && distPercent < 0.99) {
+                                                        int barProgress = (int) (bar.length() * distPercent);
+                                                        bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
+                                                    }
+                                                    this.sendMessage(Text.of(bar), true);
+                                                }
+                                                canUseTotem = true;       
+                                            } else {
+                                                if(canUseTotem) {
+                                                    canUseTotem = false;
+                                                } else {
+                                                    this.sendMessage(new TranslatableText("angeltotem.errorTargetOutOfRange", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
+                                                }
+                                            }     
                                         }
-                                    }                                                                                                        
+                                    }                                                                                                   
                                 }
                             }
                         }

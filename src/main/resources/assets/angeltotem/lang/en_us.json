@@ -6,9 +6,12 @@
 	"angeltotem.errorTotemUnbound": "You must bind this totem to use it!",
 	"angeltotem.errorTargetMissing": "Your %s appears to be missing.",
 	"angeltotem.errorTargetOutOfRange": "Your %s is out of range!",
+	"angeltotem.errorBedNotSpawnpoint": "Your %s is not your current spawn point!",
+
+	"angeltotem.errorAnchorOutOfCharges": "Your Respawn Anchor is out of charges!",
+	
 
 	"angeltotem.tooltip.boundTo": "§7Bound to a %d§7 in %s§7",
-	"angeltotem.tooltip.boundAt": "§7At x %d, y %s, z",
 	"angeltotem.tooltip.invalid": "§7This totem is §4invalid§7.",
 
 	"angeltotem.dimensionKey.overworld": "The Overworld",
