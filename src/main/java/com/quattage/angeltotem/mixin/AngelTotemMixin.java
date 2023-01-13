@@ -12,12 +12,9 @@ import com.quattage.angeltotem.compat.TrinketTotem;
 import com.quattage.angeltotem.helpers.MathHelper;
 
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.block.BeaconBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -89,11 +86,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             respawnPosition = new BlockPos(totemNbt.getDouble("PositionX"), totemNbt.getDouble("PositionY"), totemNbt.getDouble("PositionZ"));
                         }
                     }
-                    
-                    if(respawnPosition!= null) {
-                        spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());
-                    }
-
                     sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
                     if(doBedCheck) {             
                         if(!sameDimension) {    
@@ -104,13 +96,14 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             if(respawnPosition == null) {                                                                                      
                                 this.sendMessage(new TranslatableText("angeltotem.errorTotemUnbound"), true);                 
                                 canUseTotem = false;                                                                                 
-                            } else {                                                                                                  
+                            } else {                              
+                                spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());                                                                    
                                 if(!spawnPointHasBed) {                                                                               
                                     this.sendMessage(new TranslatableText("angeltotem.errorTargetMissing", new TranslatableText(totemNbt.getString("BindingTarget"))), true);  
                                     canUseTotem = false;                                                                           
                                 } else {            
                                     serverPlayer = (ServerPlayerEntity) (Object) this;
-                                    if((totemNbt.getString("BindingTarget").toUpperCase().contains("ANCHOR") || totemNbt.getString("BindingTarget").toUpperCase().contains("BED")) && !respawnPosition.equals(serverPlayer.getSpawnPointPosition())) {
+                                    if((totemNbt.getString("BindingTarget").toUpperCase().contains("ANCHOR") || totemNbt.getString("BindingTarget").toUpperCase().contains("BED")) && (!respawnPosition.isWithinDistance(serverPlayer.getSpawnPointPosition(), 6d))) {
                                         this.sendMessage(new TranslatableText("angeltotem.errorBedNotSpawnpoint", new TranslatableText(totemNbt.getString("BindingTarget"))), true);   
                                     } else {
                                         BlockState respawnBlock = world.getBlockState(respawnPosition);
