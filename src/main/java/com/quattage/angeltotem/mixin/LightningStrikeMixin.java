@@ -4,7 +4,6 @@ import java.util.Random;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-import com.quattage.angeltotem.AngelTotem;
 import com.quattage.angeltotem.recipe.RecipeMan;
 
 import net.minecraft.entity.Entity;

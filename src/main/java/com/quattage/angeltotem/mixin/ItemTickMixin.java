@@ -40,7 +40,16 @@ public abstract class ItemTickMixin extends Entity {
             if(result != null) {
                  AngelTotem.messageLog("ITEM IS A VALID BEAMING RECIPE");
                 if(isInBeaconBeam(entity, world)) {
-                    AngelTotem.messageLog("ITEM IN BEACON BEAM!!!!");
+                    //if this item can despawn
+                        //set this ItemEntity to never despawn
+                    //add a tick tag to the time
+                    //play ambient progress sounds
+                    //add a progress-indicative particle effect
+                    //if the tick tag >= processTime
+                        //play a progress complete sound
+                        //add a small explosion and smoke particle effect
+                        //kill the item
+                        //spawn a new recipe result with an upwards force
                 }
             }
         }

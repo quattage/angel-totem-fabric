@@ -6,22 +6,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.quattage.angeltotem.compat.TrinketsCompat;
 import com.quattage.angeltotem.config.AngelTotemConfig;
-
-import com.quattage.angeltotem.recipe.InWorldFakeInventory;
 
 import com.quattage.angeltotem.recipe.beaming.BeamingRecipe;
 import com.quattage.angeltotem.recipe.beaming.BeamingRecipeSerializer;
