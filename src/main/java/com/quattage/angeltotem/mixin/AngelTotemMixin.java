@@ -86,6 +86,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             respawnPosition = new BlockPos(totemNbt.getDouble("PositionX"), totemNbt.getDouble("PositionY"), totemNbt.getDouble("PositionZ"));
                         }
                     }
+                    //fix this soon
                     sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
                     if(doBedCheck) {             
                         if(!sameDimension) {    
@@ -112,15 +113,20 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                         } else {
                                             if(respawnBlock.getBlock() == Blocks.BEACON) {
                                                 int beaconLevels = currentWorld.getBlockEntity(respawnPosition).toInitialChunkDataNbt().getInt("Levels");
-                                                AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
-                                                if(beaconLevels == 4) {
-                                                    maximumAllowedDistance *= 3;
-                                                } else if(beaconLevels == 3) {
-                                                    maximumAllowedDistance *= 2;
-                                                } else if(beaconLevels == 2) {
-                                                    maximumAllowedDistance *= 1.5;
+                                                if(beaconLevels == 0) {
+                                                    this.sendMessage(new TranslatableText("angeltotem.errorBeaconInactive"), true);
+                                                    canUseTotem = false;
                                                 } else {
-                                                    maximumAllowedDistance *= 1;
+                                                    AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
+                                                    if(beaconLevels == 4) {
+                                                        maximumAllowedDistance *= 3;
+                                                    } else if(beaconLevels == 3) {
+                                                        maximumAllowedDistance *= 2;
+                                                    } else if(beaconLevels == 2) {
+                                                        maximumAllowedDistance *= 1.5;
+                                                    } else {
+                                                        maximumAllowedDistance *= 1;
+                                                    }
                                                 }
                                             }
                                             //assign an int to keep track of distance between player and bed            
