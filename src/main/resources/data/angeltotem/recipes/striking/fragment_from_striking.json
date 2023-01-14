@@ -4,5 +4,5 @@
     "item": "minecraft:totem_of_undying"
   },
   "outputItem": "angeltotem:totem_fragment",
-  "processTime": "1"
+  "outputAmount": "4"
 }

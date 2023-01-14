@@ -33,7 +33,6 @@ public abstract class ItemTickMixin extends Entity {
     private void tick(CallbackInfo info) {
         ItemEntity entity = (ItemEntity)(Object)this;
         World world = entity.getWorld();
-        
         if(!world.isClient()) {
             ItemStack input = entity.getStack();
             ItemStack result = RecipeMan.parseBeamingRecipe(input, world);

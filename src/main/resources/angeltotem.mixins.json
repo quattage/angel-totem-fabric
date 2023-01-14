@@ -9,7 +9,9 @@
 		"TotemHurtMixin",
 		"LightningStrikeMixin",
 		"ItemEntityPreserveMixin",
-		"BedRightClickMixin"
+		"BedRightClickMixin",
+		"accessor.BeaconBlockEntityAccessor",
+		"ItemTickMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
