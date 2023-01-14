@@ -117,7 +117,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                                     this.sendMessage(new TranslatableText("angeltotem.errorBeaconInactive"), true);
                                                     canUseTotem = false;
                                                 } else {
-                                                    AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
+                                                    //AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
                                                     if(beaconLevels == 4) {
                                                         maximumAllowedDistance *= 3;
                                                     } else if(beaconLevels == 3) {

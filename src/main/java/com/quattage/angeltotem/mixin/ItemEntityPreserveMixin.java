@@ -5,6 +5,7 @@ import java.util.Random;
 import org.spongepowered.asm.mixin.Mixin;
 
 import com.quattage.angeltotem.AngelTotem;
+import com.quattage.angeltotem.recipe.RecipeMan;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -32,7 +33,7 @@ public abstract class ItemEntityPreserveMixin extends Entity {
             // if the item in question can despawn in the first place
             if(activeItem.getItemAge() != Short.MIN_VALUE) {
                 // if the stored activeItem passes the recipe lookup from the serializer 
-                if(AngelTotem.parseStrikingRecipe(activeItem.getStack(), world) != null && state.getBlock() == Blocks.LIGHTNING_ROD) {
+                if(RecipeMan.parseStrikingRecipe(activeItem.getStack(), world) != null && state.getBlock() == Blocks.LIGHTNING_ROD) {
                     // if the blockstate passed by the override is a lightning rod
                     if(state.getBlock() == Blocks.LIGHTNING_ROD) {
                         if(!world.isClient()) { 

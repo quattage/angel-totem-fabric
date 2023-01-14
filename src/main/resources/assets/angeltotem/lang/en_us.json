@@ -2,13 +2,15 @@
 	"item.angeltotem.totem_of_unfalling": "Unbound Totem of Unfalling",
 	"item.angeltotem.bound_totem_of_unfalling": "Totem of Unfalling",
 	"item.angeltotem.totem_fragment": "Totem Fragment",
-	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your %s!",
-	"angeltotem.errorTotemUnbound": "You must bind this totem to use it!",
+	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your %s.",
+	"angeltotem.errorTotemUnbound": "You must bind this totem to use it.",
 	"angeltotem.errorTargetMissing": "Your %s appears to be missing.",
 	"angeltotem.errorTargetOutOfRange": "Your %s is out of range!",
-	"angeltotem.errorBedNotSpawnpoint": "Your %s is not your current spawn point!",
+	"angeltotem.errorBedNotSpawnpoint": "Your %s is not your current spawn point.",
 
-	"angeltotem.errorAnchorOutOfCharges": "Your Respawn Anchor is out of charges!",
+	"angeltotem.errorBeaconInactive" : "Your beacon is inactive.",
+
+	"angeltotem.errorAnchorOutOfCharges": "Your Respawn Anchor is out of charges.",
 	
 
 	"angeltotem.tooltip.boundTo": "§7Bound to a %d§7 in %s§7",

@@ -39,13 +39,9 @@ public abstract class BedRightClickMixin{
             locals = LocalCapture.NO_CAPTURE
     )
     public void shouldUseBed(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cinfo) {
-        // store the state of the block in question
         BlockState state = world.getBlockState(hitResult.getBlockPos());
-        // if the player interacted with a totem target and is holding a totem
         if(state.isIn(AngelTotem.getValidTotemTargets()) && player.getMainHandStack().getItem() == AngelTotem.ANGEL_TOTEM) {
-            // "force" call useOnBlock for the ANGEL_TOTEM item
             player.getMainHandStack().getItem().useOnBlock(new ItemUsageContext(player, hand, hitResult));
-            // declare the action result passed to ignore the sleeping action
             cinfo.setReturnValue(ActionResult.PASS);
         }
     }

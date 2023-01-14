@@ -5,6 +5,7 @@ import java.util.Random;
 import org.spongepowered.asm.mixin.Mixin;
 
 import com.quattage.angeltotem.AngelTotem;
+import com.quattage.angeltotem.recipe.RecipeMan;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -25,46 +26,27 @@ public abstract class LightningStrikeMixin extends Entity {
     }
     @Override
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
-        // ensures this code is only executed by the server when the struck LivingEntity
-        // is of subtype ItemEntity
         if (!this.world.isClient() && ((Object) this instanceof ItemEntity)) {
-            // initialize an itemstack as null
             ItemStack result = null;
-            // save the position of the lightning strike to use as a reference for where the
-            // item gets spawned
             Vec3d strikePosition = this.getPos();
-            // if the itemEntity isn't null, then parse the ingredient to get its result
             if ((ItemEntity) (Object) this != null)
-                result = AngelTotem.parseStrikingRecipe(((ItemEntity) (Entity) this).getStack(), world);
-            // check if the parsed recupe result actually exists for the given input object
+                result = RecipeMan.parseStrikingRecipe(((ItemEntity) (Entity) this).getStack(), world);
             if (result != null) {
                 int resultCount = result.getCount();
-                // loop once for each item in the result's stack
-                
                 for (int itemCount = 0; itemCount < resultCount; itemCount++) {    
-                    // create a new instance of the result ItemStack, but set its count to 1
                     ItemStack resultToSpawn = result;
                     resultToSpawn.setCount(1);
-                    // create a new ItemEntity at the strike position and initialize it with a copy of the resultToSpawn item
-                    ItemEntity newItem = new ItemEntity(world, strikePosition.x, strikePosition.y, strikePosition.z,
-                            resultToSpawn.copy());
-                    // make sure the result ItemEntity doesn't burn in the fire created by lightning
+                    ItemEntity newItem = new ItemEntity(world, strikePosition.x, strikePosition.y, strikePosition.z, resultToSpawn.copy());
                     newItem.setInvulnerable(true);
-                    // add velocity to the result ItemStack with some random velocity vectors
                     newItem.setVelocity((new Random().nextDouble() - 0.5) * 0.3d, 0.4d, (new Random().nextDouble() - 0.5) * 0.3d);
-                    // add the itemEntity to the world
                     world.spawnEntity(newItem);
                 }
-                // play cool crafting sound
                 world.playSound(null, strikePosition.x, strikePosition.y, strikePosition.z, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.HOSTILE, 4f, 0.8f);
-                // remove the original ingredient entity from the world
                 this.remove(RemovalReason.DISCARDED);
             } else {
-                // if the conditions are not met, defer to the vanilla non-overriden method
                 super.onStruckByLightning(world, lightning);
             }
         } else {
-            // if the conditions are not met, defer to the vanilla non-overriden method
             super.onStruckByLightning(world, lightning);
         }
     }

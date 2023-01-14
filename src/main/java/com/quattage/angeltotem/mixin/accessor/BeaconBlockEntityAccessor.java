@@ -9,9 +9,9 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 
 @Mixin(BeaconBlockEntity.class)
 public interface BeaconBlockEntityAccessor {
-	@Accessor("beamSections")
-	List<BeaconBlockEntity.BeamSegment> beamSections();
+	@Accessor("beamSegments")
+	List<BeaconBlockEntity.BeamSegment> beamSegments();
 
-	@Accessor("levels")
+	@Accessor("level")
 	int getLevels();
 }

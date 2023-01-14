@@ -1,0 +1,8 @@
+{
+  "type": "angeltotem:beaming",
+  "inputItem": {
+    "item": "angeltotem:unbound_totem_of_unfalling"
+  },
+  "outputItem": "angeltotem:totem_of_unfalling",
+  "outputAmount": "1"
+}
