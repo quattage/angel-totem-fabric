@@ -69,10 +69,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
             
         
         if(!world.isClient()) {
-            //there's no point in doing any of this if the player is in creative
             if(!this.abilities.creativeMode) {
-                //if the player is holding the totem
-                
                 if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
                     if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
                         totemNbt = currentOffHand.getNbt();
@@ -87,9 +84,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
                         if(totemNbt.contains("PositionX") && totemNbt.contains("PositionY") && totemNbt.contains("PositionZ")) {
                             respawnPosition = new BlockPos(totemNbt.getDouble("PositionX"), totemNbt.getDouble("PositionY"), totemNbt.getDouble("PositionZ"));
                         }
+                        sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
+                    } else {
+                        totemNbt = new NbtCompound();
                     }
-                    //fix this soon
-                    sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
+                        
+
                     if(doBedCheck) {             
                         if(!sameDimension) {    
                             this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
