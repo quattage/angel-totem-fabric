@@ -60,6 +60,8 @@ public abstract class AngelTotemMixin extends LivingEntity {
         ServerPlayerEntity serverPlayer;
         //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
         
+        
+
         if(AngelTotem.getShouldUseTrinkets()) 
             trinketEquip = TrinketTotem.isTrinketEquipped;
         else 

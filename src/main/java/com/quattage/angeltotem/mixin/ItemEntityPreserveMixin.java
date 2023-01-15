@@ -55,12 +55,10 @@ public abstract class ItemEntityPreserveMixin extends Entity {
                     
                 }
             } else {
-                // if the previous conditions are not met, then fall back on the super's implementation 
                 super.onBlockCollision(state);
             }
         }
         else {
-            // if the previous conditions are not met, then fall back on the super's implementation 
             super.onBlockCollision(state);
         }
     }

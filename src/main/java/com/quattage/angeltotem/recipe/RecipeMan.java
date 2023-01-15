@@ -36,4 +36,15 @@ public class RecipeMan {
         }
         return null;
     }
+
+    public static int parseBeamingRecipeTime(ItemStack inputItem, World world) {
+        InWorldFakeInventory recipeManager = new InWorldFakeInventory(ItemStack.EMPTY);
+        recipeManager.setStack(0, inputItem);
+        Optional<BeamingRecipe> recipe = world.getRecipeManager()
+                .getFirstMatch(BeamingRecipe.BeamingRecipeType.INSTANCE, recipeManager, world);
+        if (recipe.isPresent()) {
+            return recipe.get().getProcessTime();
+        }
+        return 0;
+    }
 }

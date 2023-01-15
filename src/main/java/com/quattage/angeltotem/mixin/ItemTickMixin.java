@@ -1,5 +1,7 @@
 package com.quattage.angeltotem.mixin;
 
+import java.util.Random;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,8 +18,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
@@ -33,23 +40,58 @@ public abstract class ItemTickMixin extends Entity {
     private void tick(CallbackInfo info) {
         ItemEntity entity = (ItemEntity)(Object)this;
         World world = entity.getWorld();
-        if(!world.isClient()) {
-            ItemStack input = entity.getStack();
-            ItemStack result = RecipeMan.parseBeamingRecipe(input, world);
-            AngelTotem.messageLog("item is ticking...");
-            if(result != null) {
-                 AngelTotem.messageLog("ITEM IS A VALID BEAMING RECIPE");
-                if(isInBeaconBeam(entity, world)) {
-                    //if this item can despawn
-                        //set this ItemEntity to never despawn
-                    //add a tick tag to the time
-                    //play ambient progress sounds
-                    //add a progress-indicative particle effect
-                    //if the tick tag >= processTime
-                        //play a progress complete sound
-                        //add a small explosion and smoke particle effect
-                        //kill the item
-                        //spawn a new recipe result with an upwards force
+        Vec3d pos;
+        
+        boolean isClient = false;
+        if(world.isClient) {
+            isClient = true;
+        }
+
+        ItemStack input = entity.getStack();
+        ItemStack result = RecipeMan.parseBeamingRecipe(input, world);
+        int processTime = RecipeMan.parseBeamingRecipeTime(input, world);
+        AngelTotem.messageLog("item is ticking...");
+        if(result != null) {
+            AngelTotem.messageLog("ITEM IS A VALID BEAMING RECIPE");
+            if(isInBeaconBeam(entity, world)) {
+                entity.setNeverDespawn();
+                pos = entity.getPos();
+                ItemStack groundStack = entity.getStack();
+                if(!groundStack.hasNbt()) {
+                    if(!isClient) {
+                        groundStack.setNbt(new NbtCompound());
+                        groundStack.getNbt().putInt("angeltotem:beaming_progress", 1);
+                    } 
+                } else {
+                    if(!isClient) {
+                        groundStack.getNbt().putInt("angeltotem:beaming_progress", (groundStack.getNbt().getInt("angeltotem:beaming_progress")) + 1);
+                        AngelTotem.messageLog("progress: " + groundStack.getNbt().getInt("angeltotem:beaming_progress"));
+                        world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.BLOCKS, 0.5f, 0.3f);  
+                    } else
+                    world.addParticle(ParticleTypes.GLOW, pos.x, pos.y + 0.2, pos.z, (new Random().nextDouble() - 0.5) * 0.3d, 1d, (new Random().nextDouble() - 0.5) * 0.3d);
+                }
+
+                if(groundStack.getNbt().getInt("angeltotem:beaming_progress") >= processTime) {
+
+                    if(!isClient) {
+                        entity.remove(RemovalReason.DISCARDED);   
+                        ItemEntity newItem = new ItemEntity(world, pos.x, pos.y, pos.z, result.copy());
+                        newItem.setInvulnerable(true);
+                        newItem.setVelocity((new Random().nextDouble() - 0.5) * 0.3d, 0.4d, (new Random().nextDouble() - 0.5) * 0.3d);
+                        world.spawnEntity(newItem);
+                        world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 2f, 0.4f);  
+                    } else {
+                        world.addParticle(ParticleTypes.EXPLOSION, pos.x, pos.y + 0.2, pos.z, (new Random().nextDouble() - 0.5) * 0.3d, 1d, (new Random().nextDouble() - 0.5) * 0.3d);
+                    }
+                } else {
+                    if(!isInBeaconBeam(entity, world)) {
+                        if(groundStack.hasNbt()) {
+                            if(groundStack.getNbt().getInt("angeltotem:beaming_progress") >= 0) {
+                                groundStack.getNbt().putInt("angeltotem:beaming_progress", (groundStack.getNbt().getInt("angeltotem:beaming_progress")) - 1);
+                            } else 
+                                groundStack.getNbt().remove("angelTotem:beaming_progress");
+                        }
+                    }
                 }
             }
         }
