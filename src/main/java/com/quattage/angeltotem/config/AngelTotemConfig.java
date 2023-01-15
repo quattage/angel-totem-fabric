@@ -18,13 +18,13 @@ public class AngelTotemConfig implements ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     public BasicTotemOptions BasicTotemOptions = new BasicTotemOptions();
     public static class BasicTotemOptions {
-        @Comment("Radius around the player's bed that they are allowed to use the ring in, measured in blocks. Set to 0 to disable.")
-        public int bedFlightRadius = 50;
+        @Comment("Radius around the player's bed that they are allowed to use the totem in, measured in blocks. Set to 0 to disable.")
+        public int flightRadius = 50;
 
-        @Comment("Toggle the requirement for an active respawn bed to use the totem.")
-        public boolean doBedCheck = true;
+        @Comment("Toggle the requirement for an active binding target to use the totem.")
+        public boolean requireTarget = true;
         
-        @Comment("Enable Hard Mode, which replaces beds as a binding target with a beacon")
+        @Comment("Enable Hard Mode, which forces the player to use a beacon")
         public boolean hardMode = false;
 
         @Comment("Enable falling relief, which prevents the user from dying if they lose their totem mid-air.")
