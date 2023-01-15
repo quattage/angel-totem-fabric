@@ -95,7 +95,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
                             canUseTotem = false;             
                         } else {
-                            //if the player even has a valid respawn position (this will rarely happen but yknow)
                             if(respawnPosition == null) {                                                                                      
                                 this.sendMessage(new TranslatableText("angeltotem.errorTotemUnbound"), true);                 
                                 canUseTotem = false;                                                                                 
