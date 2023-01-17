@@ -35,186 +35,156 @@ import net.minecraft.world.World;
 @Mixin(PlayerEntity.class)
 public abstract class AngelTotemMixin extends LivingEntity {
 
-    @Shadow public abstract void sendAbilitiesUpdate();
-    @Shadow @Final private PlayerAbilities abilities;
-    @Shadow public abstract void sendMessage(Text message, boolean actionBar);
-    private boolean trinketEquip;
+    @Shadow
+    public abstract void sendAbilitiesUpdate();
+
+    @Shadow @Final
+    private PlayerAbilities abilities;
+
+    @Shadow
+    public abstract void sendMessage(Text message, boolean actionBar);
 
     public AngelTotemMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
+
+    PlayerEntity player = ((PlayerEntity) (Object) this);
+    PlayerInventory inventory = player.getInventory();    
+        
+    World currentWorld;
+    BlockPos totemBindLocation = null;
+    BlockPos playerRespawnPosition = null;
+
+    boolean spawnPointHasBed = false;
+    boolean sameDimension = false;
+    boolean canUseTotem = false;
+
+    boolean doTargetCheck = AngelTotem.getConfig().BasicTotemOptions.requireTarget;
+    int maxDistance = AngelTotem.getConfig().BasicTotemOptions.flightRadius;
+    //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
+        
+    NbtCompound totemNbt = null;
+    //ServerPlayerEntity serverPlayer;
+
+
+
+
+
+
     @Inject(at = @At("TAIL"), method = "tick")
     private void tick(CallbackInfo info) {
-        ItemStack currentOffHand = this.getOffHandStack();
-        ItemStack currentMainHand = this.getMainHandStack();
-        PlayerInventory activeInventory = ((PlayerEntity) (Object) this).getInventory();
-        BlockPos respawnPosition = null;
-        boolean spawnPointHasBed = false;
-        boolean sameDimension = false;
-        boolean canUseTotem = false;
-        World currentWorld = this.getWorld();
-        int maximumAllowedDistance = AngelTotem.getConfig().BasicTotemOptions.flightRadius;
-        boolean doBedCheck = AngelTotem.getConfig().BasicTotemOptions.requireTarget;
-        NbtCompound totemNbt = null;
-        ServerPlayerEntity serverPlayer;
-        //boolean useReliefMode = AngelTotem.getConfig().BasicTotemOptions.reliefMode;
-        
-        
-
-        if(AngelTotem.getShouldUseTrinkets()) 
-            trinketEquip = TrinketTotem.isTrinketEquipped;
-        else 
-            trinketEquip = false;
-            
-        
-        if(!world.isClient()) {
-            if(!this.abilities.creativeMode) {
-                if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM || trinketEquip) {   
-                    if(currentOffHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
-                        totemNbt = currentOffHand.getNbt();
-                    }
-                    if(currentMainHand.getItem() == AngelTotem.BOUND_ANGEL_TOTEM) {
-                        totemNbt = currentMainHand.getNbt();
-                    }
-                    if(trinketEquip) {
-                        totemNbt = TrinketTotem.getTrinketNbt((PlayerEntity) (Object) this, world);
-                    }
-                    if(totemNbt != null) {
-                        if(totemNbt.contains("PositionX") && totemNbt.contains("PositionY") && totemNbt.contains("PositionZ")) {
-                            respawnPosition = new BlockPos(totemNbt.getDouble("PositionX"), totemNbt.getDouble("PositionY"), totemNbt.getDouble("PositionZ"));
-                        }
-                        sameDimension = world.getRegistryKey().getValue().getPath().equals(totemNbt.getString("Dimension"));
-                    } else {
-                        totemNbt = new NbtCompound();
-                    }
-                        
-
-                    if(doBedCheck) {             
-                        if(!sameDimension) {    
-                            this.sendMessage(new TranslatableText("angeltotem.errorDimensionMismatch", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
-                            canUseTotem = false;             
-                        } else {
-                            if(respawnPosition == null) {                                                                                      
-                                this.sendMessage(new TranslatableText("angeltotem.errorTotemUnbound"), true);                 
-                                canUseTotem = false;                                                                                 
-                            } else {                              
-                                spawnPointHasBed = currentWorld.getBlockState(respawnPosition).isIn(AngelTotem.getValidTotemTargets());                                                                    
-                                if(!spawnPointHasBed) {                                                                               
-                                    this.sendMessage(new TranslatableText("angeltotem.errorTargetMissing", new TranslatableText(totemNbt.getString("BindingTarget"))), true);  
-                                    canUseTotem = false;                                                                           
-                                } else {            
-                                    serverPlayer = (ServerPlayerEntity) (Object) this;
-                                    if((totemNbt.getString("BindingTarget").toUpperCase().contains("ANCHOR") || totemNbt.getString("BindingTarget").toUpperCase().contains("BED")) && (!respawnPosition.isWithinDistance(serverPlayer.getSpawnPointPosition(), 6d))) {
-                                        this.sendMessage(new TranslatableText("angeltotem.errorBedNotSpawnpoint", new TranslatableText(totemNbt.getString("BindingTarget"))), true);   
-                                    } else {
-                                        BlockState respawnBlock = world.getBlockState(respawnPosition);
-                                        if(respawnBlock.getBlock() == Blocks.RESPAWN_ANCHOR && respawnBlock.get(RespawnAnchorBlock.CHARGES) == 0) {
-                                            this.sendMessage(new TranslatableText("angeltotem.errorAnchorOutOfCharges"), true);   
-                                        } else {
-                                            if(respawnBlock.getBlock() == Blocks.BEACON) {
-                                                int beaconLevels = currentWorld.getBlockEntity(respawnPosition).toInitialChunkDataNbt().getInt("Levels");
-                                                if(beaconLevels == 0) {
-                                                    this.sendMessage(new TranslatableText("angeltotem.errorBeaconInactive"), true);
-                                                    canUseTotem = false;
-                                                } else {
-                                                    //AngelTotem.messageLog("BEACON LEVELS: " + beaconLevels);
-                                                    if(beaconLevels == 4) {
-                                                        maximumAllowedDistance *= 3;
-                                                    } else if(beaconLevels == 3) {
-                                                        maximumAllowedDistance *= 2;
-                                                    } else if(beaconLevels == 2) {
-                                                        maximumAllowedDistance *= 1.5;
-                                                    } else {
-                                                        maximumAllowedDistance *= 1;
-                                                    }
-                                                }
-                                            }
-                                            //assign an int to keep track of distance between player and bed            
-                                            int blockPosDistance = respawnPosition.getManhattanDistance(new Vec3i((int) Math.round(this.getX()), (int) Math.round(this.getY()), (int) Math.round(this.getZ())));
-                                            //assign a float to calculate percent of configured distance the player currently is
-                                            float distPercent = (MathHelper.clampValue((float) blockPosDistance / (float) maximumAllowedDistance, 0f, 1f));
-                                            //the width of the 
-                                            int barWidth = AngelTotem.getConfig().AdvancedTotemOptions.indicatorWidth;
-                                            String bar = "§a";
-                                            if(distPercent > 0.5f)
-                                                bar = "§6";
-                                            if(distPercent > 0.8f)
-                                                bar = "§4";
-                                            if(blockPosDistance < maximumAllowedDistance + 4) {
-                                                if(barWidth > 0) {
-                                                    if(barWidth < 15)
-                                                        barWidth = 15;
-                                                    for(int pipe = 0; pipe < barWidth; pipe++) {
-                                                        bar += "|";
-                                                    }
-
-                                                    if(distPercent > 0.1 && distPercent < 0.99) {
-                                                        int barProgress = (int) (bar.length() * distPercent);
-                                                        bar = bar.substring (0, barProgress) + "§f" + bar.substring(barProgress);
-                                                    }
-                                                    this.sendMessage(Text.of(bar), true);
-                                                }
-                                                canUseTotem = true;       
-                                            } else {
-                                                if(canUseTotem) {
-                                                    canUseTotem = false;
-                                                } else {
-                                                    this.sendMessage(new TranslatableText("angeltotem.errorTargetOutOfRange", new TranslatableText(totemNbt.getString("BindingTarget"))), true);
-                                                }
-                                            }     
-                                        }
-                                    }                                                                                                   
-                                }
-                            }
-                        }
-                    }
-                    // if the totem is disabled, but the player is flying, remove the player's ability to fly and drop the totem.
-                    if(canUseTotem == false && this.abilities.flying) {
-                        dropTotem(currentMainHand.getItem(), currentOffHand.getItem(), activeInventory, (PlayerEntity) (Object) this, world);
-                        this.abilities.allowFlying = false;
-                    }
-                } else {
-                    // if the player is not using the totem, disable it and remove the flying effect
-                    canUseTotem = false;
-                    this.abilities.allowFlying = false;
-                }
-                
-                //if the previous code has determined that the player can use the totem, then give them the ability to fly
-                if(canUseTotem) 
-                    this.abilities.allowFlying = true;
-                else
-                    this.abilities.allowFlying = false;
+        currentWorld = player.getWorld();
+        if(!currentWorld.isClient() && !isCheating()) {
+            AngelTotem.messageLog("totem: " + isTotemEquipped());
+            if(isTotemEquipped()) {
+                this.abilities.allowFlying = true;
             } else {
-                if(this.abilities.creativeMode) {
-                    this.abilities.allowFlying = true;
-                }
-                if(((PlayerEntity) (Object) this).isSpectator()) {
-                    this.noClip = true;
-                }
+                this.abilities.allowFlying = false;
             }
         }
-        this.sendAbilitiesUpdate();
-    }   
 
-    void dropTotem(Item mainHandItem, Item offHandItem, PlayerInventory inventory, PlayerEntity player, World world) {
+        if(this.abilities.flying && !canUseTotem) {
+            dropTotem();
+        }
+
+        this.sendAbilitiesUpdate();
+    }
+
+   
+
+    //1 = BED,  2 = ANCHOR,  3 = BEACON,  0 = GENERIC
+    int getBoundTargetType() {
+        return 0;
+    }
+
+    //!!NOTE!! 
+    //PRIORITIZES MAIN HAND IN CASES WHERE MULTIPLE TOTEMS ARE HELD SIMULTANEOUSLY
+    NbtCompound getTotemNbt() {
+        if(isMainHandTotemEquipped()) {
+            return this.getMainHandStack().getNbt();
+        }
+        if(isOffHandTotemEquipped()) {
+            return this.getOffHandStack().getNbt();
+        }
+        if(isTrinketTotemEquipped()) {
+            return TrinketTotem.getTrinketNbt((PlayerEntity) (Object) this, currentWorld);
+        }
+        return new NbtCompound();
+    }
+
+    void dropTotem() {
         if(player.getAbilities().flying) {
-            if(mainHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
+            if(isMainHandTotemEquipped()) {
                 ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
                 totemToDrop.setNbt(inventory.getStack(inventory.selectedSlot).getNbt());
                 inventory.removeStack(inventory.selectedSlot);
                 player.dropItem(totemToDrop, true);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+                currentWorld.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT,
+                        SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            if(offHandItem == AngelTotem.BOUND_ANGEL_TOTEM) {
+            if(isOffHandTotemEquipped()) {
                 ItemStack totemToDrop = new ItemStack(AngelTotem.BOUND_ANGEL_TOTEM, 1);
                 totemToDrop.setNbt(inventory.getStack(PlayerInventory.OFF_HAND_SLOT).getNbt());
                 inventory.removeStack(PlayerInventory.OFF_HAND_SLOT);
                 player.dropItem(totemToDrop, true);
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 0.6f, 1.2f);
+                currentWorld.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT,
+                        SoundCategory.HOSTILE, 0.6f, 1.2f);
             }
-            if(trinketEquip) 
+            if(isTrinketTotemEquipped()) {
                 TrinketTotem.dropTrinketTotem(player, world);
+            }
         }
+    }
+
+    ////
+    boolean isTotemEquipped() {
+        return isOffHandTotemEquipped() || isMainHandTotemEquipped() || isTrinketTotemEquipped();
+    }
+
+    ////
+    boolean isOffHandTotemEquipped() {
+        return this.getOffHandStack().getItem() == AngelTotem.BOUND_ANGEL_TOTEM;
+    }
+
+    ////
+    boolean isMainHandTotemEquipped() {
+        return this.getMainHandStack().getItem() == AngelTotem.BOUND_ANGEL_TOTEM;
+    }
+
+    ////
+    boolean isTrinketTotemEquipped() {
+        if(AngelTotem.getShouldUseTrinkets()) {
+            return TrinketTotem.isTrinketEquipped;
+        }        
+        return false;
+    }
+
+
+    void drawIndicator(int currentValue, int maximumValue, int barWidth) {
+        float progressPercent = MathHelper.clampValue((float) currentValue / (float) maximumValue, 0f, 1f);
+        String bar = "§a";
+        if (progressPercent > 0.5f)
+            bar = "§6";
+        if (progressPercent > 0.8f)
+            bar = "§4";
+        if (currentValue < maximumValue + 4) {
+            if (barWidth > 0) {
+                if (barWidth < 15)
+                    barWidth = 15;
+                    for (int pipe = 0; pipe < barWidth; pipe++) {
+                        bar += "|";
+                    }
+                    if (progressPercent > 0.1 && progressPercent < 0.99) {
+                        int barProgress = (int) (bar.length() * progressPercent);
+                        bar = bar.substring(0, barProgress) + "§f"+ bar.substring(barProgress);
+                    }
+                this.sendMessage(Text.of(bar), true);
+            }
+        }
+    }
+
+    boolean isCheating() {
+        return this.abilities.creativeMode || ((PlayerEntity) (Object) this).isSpectator();
     }
 }

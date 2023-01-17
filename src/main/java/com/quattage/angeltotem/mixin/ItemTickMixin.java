@@ -50,9 +50,7 @@ public abstract class ItemTickMixin extends Entity {
         ItemStack input = entity.getStack();
         ItemStack result = RecipeMan.parseBeamingRecipe(input, world);
         int processTime = RecipeMan.parseBeamingRecipeTime(input, world);
-        AngelTotem.messageLog("item is ticking...");
         if(result != null) {
-            AngelTotem.messageLog("ITEM IS A VALID BEAMING RECIPE");
             if(isInBeaconBeam(entity, world)) {
                 entity.setNeverDespawn();
                 pos = entity.getPos();
@@ -98,8 +96,8 @@ public abstract class ItemTickMixin extends Entity {
     }
 
     private boolean isInBeaconBeam(ItemEntity entity, World world) {
-        int posX = (int)Math.floor(entity.getX());;
-        int posZ = (int)Math.floor(entity.getZ());;
+        int posX = (int)Math.floor(entity.getX());
+        int posZ = (int)Math.floor(entity.getZ());
         int maxHeight = world.getTopY(Heightmap.Type.WORLD_SURFACE, posX, posZ);
         BlockPos.Mutable tempPos = new BlockPos.Mutable(posX, Math.min((int)Math.floor(entity.getY()), maxHeight), posZ);
 
