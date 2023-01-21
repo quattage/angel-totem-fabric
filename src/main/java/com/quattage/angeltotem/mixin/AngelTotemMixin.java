@@ -51,7 +51,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
         super(entityType, world);
     }
 
-
     PlayerEntity currentPlayer = ((PlayerEntity) (Object) this);
     PlayerInventory inventory = currentPlayer.getInventory();    
         
@@ -80,37 +79,45 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 NbtCompound totemNbt = getTotemNbt(); 
                 String boundTarget = getTargetType(totemNbt);
                 
-                if(boundTarget == null) {
+                if(totemNbt.isEmpty()) {
                     //throw "invalid totem/something went wrong" error
 
+                ////////////////////////////////////////////////////  BED  ////////////////////////////////////////////
                 } else if(boundTarget.equals("BED")) {
-                    //check if there is a bed within 2 blocks of the totem position
-                        //check if respawn position and totem position are NOT within 2 blocks of eachother
+                    AngelTotem.messageLog("BOUND TO BED");
+                    BlockPos totemBind = getTotemTargetLocation(totemNbt);
+                    if(getWorldTargetType(totemBind).equals("BED")) {
+                        if(!getRespawnTargetLocation(currentPlayer).isWithinDistance(totemBind, 2d)) {
                             //throw "bed not spawnpoint" error
-                            //canUseTotem = false;
-                    //
-                    //ELSE
+                            canUseTotem = false;
+                        } else 
+                            canUseTotem = true;
+                    } else {
                         //throw "totem target does not exist" error
-                        //canUseTotem = false
-
+                        canUseTotem = false;
+                    }   
+                //////////////////////////////////////////////////// ANCHOR ////////////////////////////////////////////
                 } else if(boundTarget.equals("ANCHOR")) {
-                //if bound to an anchor
-                    //check if anchor exists at totem position
-                        //check if respawn position and totem position match
-                            //check if anchor DOES NOT have charges
-                                //throw "no charges" error
-                                //canUseTotem = false;
-                        //
-                        //ELSE
-                            //throw "anchor not spawnpoint" error
-                            //canUseTotem = false;
-                            
-                    //
-                    //ELSE
-                        //throw "target not present" error 
-                        //canUseTotem = false;
-
+                    AngelTotem.messageLog("BOUND TO ANCHOR");
+                    BlockPos totemBind = getTotemTargetLocation(totemNbt);
+                    if(getWorldTargetType(totemBind).equals("ANCHOR")) {
+                        if(!getRespawnTargetLocation(currentPlayer).isWithinDistance(totemBind, 2d)) {
+                            //throw "bed not spawnpoint" error
+                            canUseTotem = false;
+                        } else {
+                            if(getAnchorCharges(totemNbt) <=0) {
+                                //throw "anchor out of charges" error
+                                canUseTotem = false; 
+                            } else
+                                canUseTotem = true;
+                        }
+                    } else {
+                        //throw "totem target does not exist" error
+                        canUseTotem = false;
+                    }
+                //////////////////////////////////////////////////// BEACON ////////////////////////////////////////////
                 } else if (boundTarget.equals("BEACON")) {
+                    AngelTotem.messageLog("BOUND TO BEACON");
                 //if bound to beacon
                     //if beacon exists at spawnpoint 
                         //if beacon levels > 0;
@@ -123,16 +130,11 @@ public abstract class AngelTotemMixin extends LivingEntity {
                     //ELSE
                         //throw "beacon missing" error
                         //canUseTotem = false;
-                } else if (boundTarget.equals("GENERIC")) {
-                    //only do range check
-                } 
                 
-                //if canUseTotem (no errors were thrown)
-                    //allow flying
-
-                this.abilities.allowFlying = true;
+                
             } else {
                 this.abilities.allowFlying = false;
+                canUseTotem = false;
             }
 
             if(canUseTotem) {
@@ -161,7 +163,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
     }
     //additional implemtations for cross-mod compatability would go here
 
-
     //Returns "BED" , "ANCHOR" , or "BEACON" , falls back on "GENERIC" if it finds any other block in the targets list,
     //or "INVALID" if it doesn't find a relevent block (should never happen) Also returns "null" if the totem somehow has
     //no NBT (should also never happen)
@@ -180,7 +181,25 @@ public abstract class AngelTotemMixin extends LivingEntity {
             return "GENERIC";
         return "INVALID";
         //additional implentations for cross-mod compatability would go here
-        
+    }
+
+    String getWorldTargetType(BlockPos pos) {
+        BlockState totemTargetState = currentWorld.getBlockState(pos);
+        String totemTargetKey = totemTargetState.getBlock().getTranslationKey().toUpperCase();
+        if(totemTargetKey.contains("BED")) 
+            return "BED";
+        if(totemTargetState.getBlock().equals(Blocks.RESPAWN_ANCHOR))
+            return "ANCHOR";
+        if(totemTargetState.getBlock().equals(Blocks.BEACON)) 
+            return "BEACON";
+        if(totemTargetState.isIn(AngelTotem.getValidTotemTargets()))
+            return "GENERIC";
+        return "INVALID";
+        //additional implentations for cross-mod compatability would go here
+    }
+
+    BlockState getBlockStateAt(BlockPos pos) {
+        return currentWorld.getBlockState(pos);
     }
 
     //Returns BlockEntity found at the XYZ bind location of the totem. Useful for reading NBT data of a block
@@ -202,12 +221,8 @@ public abstract class AngelTotemMixin extends LivingEntity {
     } 
 
     // Returns NULL if the player has not changed their spawnpoint
-    BlockState getRespawnTargetState(PlayerEntity player) {
-        BlockPos spawnBlockPos = ((ServerPlayerEntity)player).getSpawnPointPosition();
-        if(spawnBlockPos != null) {
-            return currentWorld.getBlockState(spawnBlockPos);
-        } 
-        return null;
+    BlockPos getRespawnTargetLocation(PlayerEntity player) {
+        return ((ServerPlayerEntity)player).getSpawnPointPosition();
     }
 
     //Returns NBT of totems in inventory. There can be MORE THAN ONE totem in valid slots (main hand, off hand, trinkets slot, etc.)
