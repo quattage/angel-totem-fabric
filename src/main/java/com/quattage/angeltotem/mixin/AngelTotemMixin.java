@@ -81,7 +81,6 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 
                 if(totemNbt.isEmpty()) {
                     //throw "invalid totem/something went wrong" error
-
                 ////////////////////////////////////////////////////  BED  ////////////////////////////////////////////
                 } else if(boundTarget.equals("BED")) {
                     AngelTotem.messageLog("BOUND TO BED");
@@ -132,20 +131,22 @@ public abstract class AngelTotemMixin extends LivingEntity {
                         //canUseTotem = false;
                 
                 
-            } else {
-                this.abilities.allowFlying = false;
-                canUseTotem = false;
+                } else {
+                    this.abilities.allowFlying = false;
+                    canUseTotem = false;
+                }
+
+                if(canUseTotem) {
+                    //draw indicator
+                    //allow player to fly
+                    //do range check with maximum distance relative to their totem target
+                    //if they exceed the range, disable canUseTotem
+                    //woo done
+
+                } else if(this.abilities.flying) {
+                    dropTotem();
+                }
             }
-
-            if(canUseTotem) {
-                //draw indicator
-                //allow player to fly
-                //do range check with maximum distance relative to their totem target
-                //if they exceed the range, disable canUseTotem
-                //woo done
-
-            } else if(this.abilities.flying)
-                dropTotem();
         }
         this.sendAbilitiesUpdate();
     }
