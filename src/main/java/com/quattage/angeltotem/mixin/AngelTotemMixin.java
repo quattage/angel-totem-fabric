@@ -80,45 +80,52 @@ public abstract class AngelTotemMixin extends LivingEntity {
                 NbtCompound totemNbt = getTotemNbt(); 
                 String boundTarget = getTargetType(totemNbt);
                 
-                //if bound to a bed
+                if(boundTarget == null) {
+                    //throw "invalid totem/something went wrong" error
 
-                    //check if bed is within 2 blocks of totem position
-                        //throw "target not present" error 
-                        //canUseTotem = false;
+                } else if(boundTarget.equals("BED")) {
+                    //check if there is a bed within 2 blocks of the totem position
+                        //check if respawn position and totem position are NOT within 2 blocks of eachother
+                            //throw "bed not spawnpoint" error
+                            //canUseTotem = false;
+                    //
+                    //ELSE
+                        //throw "totem target does not exist" error
+                        //canUseTotem = false
 
-                    //check if respawn position and totem position are within 2 blocks of eachother
-                        //throw "bed not spawnpoint" error
-                        //canUseTotem = false;
-                //
-                //ELSE
+                } else if(boundTarget.equals("ANCHOR")) {
                 //if bound to an anchor
-
                     //check if anchor exists at totem position
+                        //check if respawn position and totem position match
+                            //check if anchor DOES NOT have charges
+                                //throw "no charges" error
+                                //canUseTotem = false;
+                        //
+                        //ELSE
+                            //throw "anchor not spawnpoint" error
+                            //canUseTotem = false;
+                            
+                    //
+                    //ELSE
                         //throw "target not present" error 
                         //canUseTotem = false;
 
-                    //check if anchor has charges
-                        //throw "no charges" error
+                } else if (boundTarget.equals("BEACON")) {
+                //if bound to beacon
+                    //if beacon exists at spawnpoint 
+                        //if beacon levels > 0;
+                            //modify flight distance by beacon multiplier
+                        //
+                        //ELSE
+                            //throw "beacon not activated" erorr
+                            //canUseTotem = false;
+                    //
+                    //ELSE
+                        //throw "beacon missing" error
                         //canUseTotem = false;
-
-                    //check if respawn position and totem position match
-                        //throw "anchor not spawnpoint" error
-                        //canUseTotem = false;
-
-                //
-                //ELSE
-                //check if bound to beacon
-
-                    //check if beacon exists at totem position
-                        //throw "target not present" error 
-                        //canUseTotem = false;
-
-                    //check if beacon has levels = 0
-                        //throw "beacon not active" error
-                        //canUseTotem = false;
-
-                    //modify flight distance by beacon level multiplier
-
+                } else if (boundTarget.equals("GENERIC")) {
+                    //only do range check
+                } 
                 
                 //if canUseTotem (no errors were thrown)
                     //allow flying
@@ -127,12 +134,17 @@ public abstract class AngelTotemMixin extends LivingEntity {
             } else {
                 this.abilities.allowFlying = false;
             }
-        }
 
-        if(this.abilities.flying && !canUseTotem) {
-            dropTotem();
-        }
+            if(canUseTotem) {
+                //draw indicator
+                //allow player to fly
+                //do range check with maximum distance relative to their totem target
+                //if they exceed the range, disable canUseTotem
+                //woo done
 
+            } else if(this.abilities.flying)
+                dropTotem();
+        }
         this.sendAbilitiesUpdate();
     }
 
@@ -150,8 +162,9 @@ public abstract class AngelTotemMixin extends LivingEntity {
     //additional implemtations for cross-mod compatability would go here
 
 
-    //Returns "BED" , "ANCHOR" , or "BEACON" , falls back on "GENERIC" if it doesn't find a block it 
-    //expects, and returns null if the totem somehow doesn't have any NBT data (this should not happen)
+    //Returns "BED" , "ANCHOR" , or "BEACON" , falls back on "GENERIC" if it finds any other block in the targets list,
+    //or "INVALID" if it doesn't find a relevent block (should never happen) Also returns "null" if the totem somehow has
+    //no NBT (should also never happen)
     String getTargetType(NbtCompound totemNbtCompound) {
         if(totemNbtCompound.isEmpty())
             return null;
@@ -163,8 +176,11 @@ public abstract class AngelTotemMixin extends LivingEntity {
             return "ANCHOR";
         if(totemTargetState.getBlock().equals(Blocks.BEACON)) 
             return "BEACON";
+        if(totemTargetState.isIn(AngelTotem.getValidTotemTargets()))
+            return "GENERIC";
+        return "INVALID";
         //additional implentations for cross-mod compatability would go here
-        return "GENERIC";
+        
     }
 
     //Returns BlockEntity found at the XYZ bind location of the totem. Useful for reading NBT data of a block
