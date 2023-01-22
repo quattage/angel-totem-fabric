@@ -4,7 +4,7 @@
 	"item.angeltotem.totem_fragment": "Totem Fragment",
 	"angeltotem.errorDimensionMismatch": "You are not in the same dimension as your %s.",
 	"angeltotem.errorTotemUnbound": "You must bind this totem to use it.",
-	"angeltotem.errorTargetMissing": "Your %s appears to be missing.",
+	"angeltotem.errorTargetNotFound": "Your %s could not be found..",
 	"angeltotem.errorTargetOutOfRange": "Your %s is out of range!",
 	"angeltotem.errorBedNotSpawnpoint": "Your %s is not your current spawn point.",
 
