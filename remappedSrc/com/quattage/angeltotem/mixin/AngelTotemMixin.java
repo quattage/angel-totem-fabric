@@ -25,7 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -37,7 +37,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
     private PlayerAbilities abilities;
 
     @Shadow
-    public abstract void sendMessage(Text text, boolean actionBar);
+    public abstract void sendMessage(Text message, boolean actionBar);
 
     @Shadow
     private final PlayerInventory inventory = new PlayerInventory((PlayerEntity)(Object)this);
@@ -82,7 +82,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             if(getRespawnPosition(currentPlayer).isWithinDistance(bindPos, 2d)) {
                                 canUseTotem = true;
                             } else {
-                                this.sendMessage(Text.translatable("angeltotem.errorBedNotSpawnpoint", Text.translatable(bindTargetKey).formatted(Formatting.BOLD)).formatted(Formatting.GRAY), true);  
+                                this.sendMessage(new TranslatableText("angeltotem.errorBedNotSpawnpoint", new TranslatableText(bindTargetKey)), true);  
                                 canUseTotem = false;
                             }
                         
@@ -92,12 +92,12 @@ public abstract class AngelTotemMixin extends LivingEntity {
                                 if(getAnchorCharges(totemNbt) > 0) {
                                     canUseTotem = true;
                                 } else {
-                                    this.sendMessage(Text.translatable("angeltotem.errorAnchorOutOfCharges").formatted(Formatting.GRAY), true); 
+                                    this.sendMessage(new TranslatableText("angeltotem.errorAnchorOutOfCharges"), true); 
                                     canUseTotem = false;
                                 }
                                 
                             } else {
-                                this.sendMessage(Text.translatable("angeltotem.errorBedNotSpawnpoint", Text.translatable(bindTargetKey).formatted(Formatting.BOLD)).formatted(Formatting.GRAY), true);   
+                                this.sendMessage(new TranslatableText("angeltotem.errorBedNotSpawnpoint", new TranslatableText(bindTargetKey)), true);   
                                 canUseTotem = false;
                             }
                         
@@ -106,7 +106,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             if(getBeaconLevels(totemNbt) > 0) {
                                 canUseTotem = true;
                             } else {
-                                this.sendMessage(Text.translatable("angeltotem.errorBeaconInactive").formatted(Formatting.GRAY), true);
+                                this.sendMessage(new TranslatableText("angeltotem.errorBeaconInactive"), true);
                                 canUseTotem = false;
                             }
                             
@@ -115,7 +115,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             canUseTotem = true;
                         }
                     } else {
-                        this.sendMessage(Text.translatable("angeltotem.errorTargetNotFound", Text.translatable(totemNbt.getString("BindingTarget")).formatted(Formatting.BOLD)).formatted(Formatting.GRAY), true); 
+                        this.sendMessage(new TranslatableText("angeltotem.errorTargetNotFound", new TranslatableText(totemNbt.getString("BindingTarget"))), true); 
                         canUseTotem = false;
                     }
 
@@ -127,7 +127,7 @@ public abstract class AngelTotemMixin extends LivingEntity {
                             canUseTotem = false;
                             this.abilities.allowFlying = false;
                             dropTotem();
-                            this.sendMessage(Text.translatable("angeltotem.errorTargetOutOfRange", Text.translatable(bindTargetKey).formatted(Formatting.BOLD)).formatted(Formatting.GRAY), true);
+                            this.sendMessage(new TranslatableText("angeltotem.errorTargetOutOfRange", new TranslatableText(bindTargetKey)), true);
                         }
                     } else {
                         if(this.abilities.flying)

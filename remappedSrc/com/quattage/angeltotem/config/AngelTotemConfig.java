@@ -1,18 +1,19 @@
 package com.quattage.angeltotem.config;
 
 
-import me.shedaniel.autoconfig.annotation.Config;
+import blue.endless.jankson.Comment;
 
+import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
-import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 @Config(name = "angeltotem")
 public class AngelTotemConfig implements ConfigData {
+   
     @Comment("Basic Options")
     @ConfigEntry.Gui.CollapsibleObject
     public BasicTotemOptions BasicTotemOptions = new BasicTotemOptions();
